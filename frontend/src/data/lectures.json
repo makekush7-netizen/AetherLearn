@@ -1,0 +1,94 @@
+{
+  "lectures": [
+    {
+      "id": "lec_001",
+      "topic": "Photosynthesis - Part 1",
+      "grade": "10",
+      "subject": "Biology",
+      "speech_text": "Hello students! Today we're learning about photosynthesis. Photosynthesis is the process by which plants convert light energy from the sun into chemical energy stored in glucose molecules. This process occurs mainly in the leaves of plants, specifically in structures called chloroplasts.",
+      "audio_url": "/audios/lec_001.mp3",
+      "duration_seconds": 45,
+      "captions": [
+        {
+          "time_start": 0,
+          "time_end": 10,
+          "text": "Hello students! Today we're learning about photosynthesis."
+        },
+        {
+          "time_start": 10,
+          "time_end": 25,
+          "text": "Photosynthesis is the process by which plants convert light energy into chemical energy."
+        },
+        {
+          "time_start": 25,
+          "time_end": 45,
+          "text": "This process occurs mainly in the leaves, specifically in chloroplasts."
+        }
+      ],
+      "notes": "Key points:\n1. Photosynthesis converts light energy to chemical energy\n2. Occurs in chloroplasts of plant cells\n3. Produces glucose and oxygen\n4. Formula: 6CO2 + 6H2O + light → C6H12O6 + 6O2",
+      "images": [],
+      "lecturer_animation": "SpeakingIdle",
+      "created_date": "2025-11-20"
+    },
+    {
+      "id": "lec_002",
+      "topic": "Cell Structure and Function",
+      "grade": "10",
+      "subject": "Biology",
+      "speech_text": "Welcome! Today we'll explore the basic structure of cells. A cell is the smallest unit of life. There are two main types of cells: prokaryotic and eukaryotic. Animal cells and plant cells are both eukaryotic cells with a nucleus.",
+      "audio_url": "/audios/lec_002.mp3",
+      "duration_seconds": 50,
+      "captions": [
+        {
+          "time_start": 0,
+          "time_end": 15,
+          "text": "Welcome! Today we'll explore the basic structure of cells."
+        },
+        {
+          "time_start": 15,
+          "time_end": 30,
+          "text": "A cell is the smallest unit of life with two main types."
+        },
+        {
+          "time_start": 30,
+          "time_end": 50,
+          "text": "Animal and plant cells are eukaryotic with a nucleus."
+        }
+      ],
+      "notes": "Cell Structure:\n1. Nucleus - contains DNA\n2. Mitochondria - powerhouse of the cell\n3. Ribosome - protein synthesis\n4. Cell membrane - controls what enters/exits\n5. Cytoplasm - gel-like substance inside",
+      "images": [],
+      "lecturer_animation": "SpeakingIdle",
+      "created_date": "2025-11-20"
+    },
+    {
+      "id": "lec_003",
+      "topic": "The Water Cycle",
+      "grade": "9",
+      "subject": "Science",
+      "speech_text": "Today's topic is the water cycle. Water is constantly moving between the Earth's surface and atmosphere. The main processes are evaporation, condensation, and precipitation.",
+      "audio_url": "/audios/lec_003.mp3",
+      "duration_seconds": 40,
+      "captions": [
+        {
+          "time_start": 0,
+          "time_end": 12,
+          "text": "Today's topic is the water cycle."
+        },
+        {
+          "time_start": 12,
+          "time_end": 30,
+          "text": "Water constantly moves between Earth's surface and atmosphere."
+        },
+        {
+          "time_start": 30,
+          "time_end": 40,
+          "text": "Main processes: evaporation, condensation, and precipitation."
+        }
+      ],
+      "notes": "Water Cycle Stages:\n1. Evaporation - water from oceans turns to vapor\n2. Condensation - vapor cools and forms clouds\n3. Precipitation - water falls as rain or snow\n4. Collection - water gathers in oceans and lakes",
+      "images": [],
+      "lecturer_animation": "SpeakingIdle",
+      "created_date": "2025-11-20"
+    }
+  ]
+}

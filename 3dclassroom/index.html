@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Three.js Classroom</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+    #animation-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 20px;
+      border-radius: 8px;
+      z-index: 100;
+    }
+    #animation-panel h3 {
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #animation-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .anim-btn {
+      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .anim-btn:hover {
+      background: #444;
+      border-color: #888;
+    }
+    .anim-btn.active {
+      background: #0a84ff;
+      border-color: #0a84ff;
+    }
+  </style>
+</head>
+<body>
+<div id="animation-panel">
+  <h3>Animations</h3>
+  <div id="animation-buttons">
+    <!-- Buttons will be added by script.js -->
+  </div>
+</div>
+<script async src="./es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./three.module.js",
+    "three/addons/loaders/GLTFLoader.js": "./jsm/loaders/GLTFLoader.js"
+  }
+}
+</script>
+<script type="module" src="script.js"></script>
+</body>
+</html>

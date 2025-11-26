@@ -1,0 +1,45 @@
+{
+  "tests": [
+    {
+      "id": "test_001",
+      "title": "Photosynthesis & Cell Structure",
+      "grade": "10",
+      "total_marks": 20,
+      "duration_minutes": 30,
+      "questions": [
+        {
+          "id": "q_001",
+          "marks": 5,
+          "type": "short_answer",
+          "text": "Briefly explain what photosynthesis is and why it's important for life on Earth.",
+          "expected_keywords": ["light", "energy", "glucose", "oxygen", "plants"],
+          "sample_answer": "Photosynthesis is the process where plants use light energy to convert carbon dioxide and water into glucose and oxygen. It's important because it produces oxygen for respiration and glucose for energy storage."
+        },
+        {
+          "id": "q_002",
+          "marks": 5,
+          "type": "short_answer",
+          "text": "Name three organelles found in a cell and describe their functions.",
+          "expected_keywords": ["nucleus", "mitochondria", "chloroplast", "ribosome", "DNA", "energy", "protein"],
+          "sample_answer": "Nucleus stores DNA; Mitochondria produces energy (ATP); Ribosomes synthesize proteins."
+        },
+        {
+          "id": "q_003",
+          "marks": 5,
+          "type": "short_answer",
+          "text": "What is the relationship between photosynthesis and respiration in cells?",
+          "expected_keywords": ["photosynthesis", "respiration", "glucose", "oxygen", "energy", "opposite", "cycle"],
+          "sample_answer": "Photosynthesis produces glucose and oxygen from light energy, while respiration uses glucose and oxygen to produce energy. They are opposite processes in a cycle."
+        },
+        {
+          "id": "q_004",
+          "marks": 5,
+          "type": "short_answer",
+          "text": "Explain how a cell membrane controls what enters and exits a cell.",
+          "expected_keywords": ["selectively permeable", "proteins", "channels", "transport", "ions", "molecules"],
+          "sample_answer": "The cell membrane is selectively permeable with protein channels that allow specific molecules to pass through. Some substances can pass freely while others require energy or carrier proteins."
+        }
+      ]
+    }
+  ]
+}

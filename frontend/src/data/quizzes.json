@@ -1,0 +1,139 @@
+{
+  "quizzes": [
+    {
+      "id": "quiz_001",
+      "lecture_id": "lec_001",
+      "topic": "Photosynthesis - Part 1",
+      "passing_score": 60,
+      "total_questions": 5,
+      "questions": [
+        {
+          "id": "q_001",
+          "text": "What is the primary function of photosynthesis?",
+          "type": "multiple_choice",
+          "options": [
+            "A) To break down glucose for energy",
+            "B) To convert light energy into chemical energy",
+            "C) To produce only oxygen",
+            "D) To absorb carbon dioxide from the air"
+          ],
+          "correct_answer": "B",
+          "explanation": "Photosynthesis converts light energy from the sun into chemical energy stored in glucose molecules."
+        },
+        {
+          "id": "q_002",
+          "text": "Where does photosynthesis primarily occur in plant cells?",
+          "type": "multiple_choice",
+          "options": [
+            "A) In the nucleus",
+            "B) In the mitochondria",
+            "C) In the chloroplasts",
+            "D) In the cell membrane"
+          ],
+          "correct_answer": "C",
+          "explanation": "Photosynthesis takes place in the chloroplasts, which contain the pigment chlorophyll."
+        },
+        {
+          "id": "q_003",
+          "text": "What are the two products of photosynthesis?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Glucose and carbon dioxide",
+            "B) Glucose and oxygen",
+            "C) Water and oxygen",
+            "D) Carbon dioxide and water"
+          ],
+          "correct_answer": "B",
+          "explanation": "Photosynthesis produces glucose (used by plants) and oxygen (released into the atmosphere)."
+        },
+        {
+          "id": "q_004",
+          "text": "What gas is required for photosynthesis?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Oxygen",
+            "B) Nitrogen",
+            "C) Carbon dioxide",
+            "D) Argon"
+          ],
+          "correct_answer": "C",
+          "explanation": "Plants absorb carbon dioxide from the atmosphere, which is essential for photosynthesis."
+        },
+        {
+          "id": "q_005",
+          "text": "Which of the following is NOT needed for photosynthesis?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Light",
+            "B) Water",
+            "C) Carbon dioxide",
+            "D) Glucose"
+          ],
+          "correct_answer": "D",
+          "explanation": "Glucose is the product of photosynthesis, not a requirement. The inputs are light, water, and CO2."
+        }
+      ]
+    },
+    {
+      "id": "quiz_002",
+      "lecture_id": "lec_002",
+      "topic": "Cell Structure and Function",
+      "passing_score": 60,
+      "total_questions": 4,
+      "questions": [
+        {
+          "id": "q_001",
+          "text": "What is the basic unit of life?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Atom",
+            "B) Molecule",
+            "C) Cell",
+            "D) Organ"
+          ],
+          "correct_answer": "C",
+          "explanation": "The cell is the smallest unit of life capable of independent function."
+        },
+        {
+          "id": "q_002",
+          "text": "What does the nucleus contain?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Proteins",
+            "B) DNA",
+            "C) Mitochondria",
+            "D) Chlorophyll"
+          ],
+          "correct_answer": "B",
+          "explanation": "The nucleus contains the cell's genetic material, DNA, which controls cell functions."
+        },
+        {
+          "id": "q_003",
+          "text": "Which organelle is known as the 'powerhouse of the cell'?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Nucleus",
+            "B) Chloroplast",
+            "C) Mitochondria",
+            "D) Ribosome"
+          ],
+          "correct_answer": "C",
+          "explanation": "Mitochondria produce ATP, the energy currency of cells, through cellular respiration."
+        },
+        {
+          "id": "q_004",
+          "text": "What function does the cell membrane have?",
+          "type": "multiple_choice",
+          "options": [
+            "A) Protein synthesis",
+            "B) Storage of genetic material",
+            "C) Controls what enters and exits the cell",
+            "D) Energy production"
+          ],
+          "correct_answer": "C",
+          "explanation": "The cell membrane is selectively permeable, controlling the movement of substances in and out of the cell."
+        }
+      ]
+    }
+  ]
+}
