@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Pause, StickyNote } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
 import AIQAWidget from "@/components/AIQAWidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -141,7 +140,6 @@ const LecturePage = () => {
   const progressPercent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
 
   return (
-    <Sidebar>
     <div className="min-h-screen bg-background flex flex-col">
       
       {/* Hidden audio element */}
@@ -251,7 +249,6 @@ const LecturePage = () => {
         </div>
       </main>
     </div>
-    </Sidebar>
   );
 };
 

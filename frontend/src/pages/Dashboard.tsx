@@ -5,7 +5,6 @@ import {
   Play, Clock, Trophy, Sparkles, ChevronRight, 
   Flame, Target, Calendar, ArrowRight, GraduationCap
 } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import lecturesData from "@/data/lectures.json";
@@ -68,8 +67,7 @@ const Dashboard = () => {
   }));
 
   return (
-    <Sidebar>
-      <div className="relative">
+    <div className="relative">
         {/* Background Effects */}
         <div className="fixed inset-0 gradient-mesh opacity-30 pointer-events-none" />
         <div className="fixed top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
@@ -313,7 +311,6 @@ const Dashboard = () => {
         </section>
         </div>
       </div>
-    </Sidebar>
   );
 };
 

@@ -1,10 +1,32 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Trophy, Medal, Loader2 } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { leaderboardAPI, LeaderboardEntry } from "@/services/api";
+import { Line, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
@@ -45,9 +67,79 @@ const LeaderboardPage = () => {
     return null;
   };
 
+  // Prepare line chart data for top 5 students
+  const top5 = leaderboard.slice(0, 5);
+  const lineChartData = {
+    labels: top5.map((entry) => entry.name),
+    datasets: [
+      {
+        label: "Student Scores",
+        data: top5.map((entry) => entry.score),
+        borderColor: "rgb(168, 85, 247)",
+        backgroundColor: "rgba(168, 85, 247, 0.1)",
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 6,
+        pointBackgroundColor: "rgb(168, 85, 247)",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointHoverRadius: 8,
+      },
+    ],
+  };
+
+  // Prepare pie chart data for score distribution
+  const pieChartData = {
+    labels: leaderboard.slice(0, 7).map((entry) => entry.name),
+    datasets: [
+      {
+        data: leaderboard.slice(0, 7).map((entry) => entry.score),
+        backgroundColor: [
+          "rgba(168, 85, 247, 0.8)",
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(16, 185, 129, 0.8)",
+          "rgba(251, 146, 60, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
+          "rgba(244, 114, 182, 0.8)",
+          "rgba(99, 102, 241, 0.8)",
+        ],
+        borderColor: [
+          "rgb(168, 85, 247)",
+          "rgb(59, 130, 246)",
+          "rgb(16, 185, 129)",
+          "rgb(251, 146, 60)",
+          "rgb(239, 68, 68)",
+          "rgb(244, 114, 182)",
+          "rgb(99, 102, 241)",
+        ],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        labels: {
+          color: "rgb(148, 163, 184)",
+          font: { size: 12 },
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        padding: 12,
+        cornerRadius: 8,
+      },
+    },
+  };
+
   return (
-    <Sidebar>
-      <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
@@ -55,7 +147,7 @@ const LeaderboardPage = () => {
           Back to Dashboard
         </Button>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="gradient-hero text-white rounded-2xl p-8 mb-6 shadow-elevated">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -65,7 +157,48 @@ const LeaderboardPage = () => {
             <p className="text-center opacity-90">See how you rank among your classmates</p>
           </div>
 
-          {/* Leaderboard Table */}
+          {/* Charts Section */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Line Chart - Top 5 Scores */}
+            <Card className="p-6 shadow-elevated">
+              <h2 className="text-xl font-bold text-foreground mb-4">Top 5 Scores Trend</h2>
+              {isLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="h-64 flex items-center justify-center">
+                  <Line data={lineChartData} options={chartOptions} />
+                </div>
+              )}
+            </Card>
+
+            {/* Pie Chart - Score Distribution */}
+            <Card className="p-6 shadow-elevated">
+              <h2 className="text-xl font-bold text-foreground mb-4">Top 7 Score Distribution</h2>
+              {isLoading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="h-64 flex items-center justify-center">
+                  <Pie
+                    data={pieChartData}
+                    options={{
+                      ...chartOptions,
+                      plugins: {
+                        ...chartOptions.plugins,
+                        legend: {
+                          ...chartOptions.plugins.legend,
+                          position: "bottom" as const,
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+            </Card>
+          </div>
           <Card className="overflow-hidden shadow-elevated">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -154,7 +287,6 @@ const LeaderboardPage = () => {
         </div>
       </main>
     </div>
-    </Sidebar>
   );
 };
 

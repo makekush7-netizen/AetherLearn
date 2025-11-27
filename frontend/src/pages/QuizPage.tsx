@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -96,7 +95,6 @@ const QuizPage = () => {
     const passed = percentage >= quiz.passing_score;
     
     return (
-      <Sidebar>
       <div className="min-h-screen bg-background flex flex-col">
         <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
           <Card className="w-full max-w-2xl p-8 text-center shadow-elevated">
@@ -130,13 +128,11 @@ const QuizPage = () => {
           </Card>
         </main>
       </div>
-      </Sidebar>
     );
   }
 
   return (
-    <Sidebar>
-      <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
@@ -211,7 +207,6 @@ const QuizPage = () => {
         </div>
       </main>
     </div>
-    </Sidebar>
   );
 };
 

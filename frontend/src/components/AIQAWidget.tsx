@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Send, Mic, MicOff, Upload, X, ImagePlus, File, Loader } from "lucide-react";
+import { Send, Mic, MicOff, Upload, X, ImagePlus, FileText, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,10 +51,11 @@ const AIQAWidget = ({ lectureId, lectureTopic }: AIQAWidgetProps) => {
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-        const audioFile = new File([audioBlob], `audio-${Date.now()}.wav`, {
-          type: "audio/wav",
-        });
-        setAttachments((prev) => [...prev, audioFile]);
+        // Create a File-like object from the blob
+        const file = new Blob([audioBlob], { type: "audio/wav" }) as any;
+        file.name = `audio-${Date.now()}.wav`;
+        file.lastModified = Date.now();
+        setAttachments((prev) => [...prev, file]);
         stream.getTracks().forEach((track) => track.stop());
         toast({
           title: "Audio Recorded",
@@ -221,7 +222,7 @@ const AIQAWidget = ({ lectureId, lectureTopic }: AIQAWidgetProps) => {
                       >
                         {att.type === "image" && <ImagePlus className="h-3 w-3" />}
                         {att.type === "audio" && <Mic className="h-3 w-3" />}
-                        {att.type === "file" && <File className="h-3 w-3" />}
+                        {att.type === "file" && <FileText className="h-3 w-3" />}
                         <span>{att.name}</span>
                       </div>
                     ))}
@@ -253,7 +254,7 @@ const AIQAWidget = ({ lectureId, lectureTopic }: AIQAWidgetProps) => {
                 )}
                 {!file.type.startsWith("image/") &&
                   !file.type.startsWith("audio/") && (
-                    <File className="h-4 w-4 text-warning" />
+                    <FileText className="h-4 w-4 text-warning" />
                   )}
                 <span className="truncate">{file.name}</span>
                 <button
@@ -372,7 +373,7 @@ const AIQAWidget = ({ lectureId, lectureTopic }: AIQAWidgetProps) => {
             disabled={isRecording || isLoading}
             className="flex items-center gap-2"
           >
-            <File className="h-4 w-4" />
+            <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Upload File</span>
           </Button>
 
