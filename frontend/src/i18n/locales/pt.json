@@ -1,0 +1,42 @@
+{
+  "header": {
+    "login": "Conectar",
+    "getStarted": "Começar"
+  },
+  "hero": {
+    "title": "Aprendizagem Interativa,",
+    "subtitle": "Até Mesmo Offline",
+    "description": "Salas de aula virtuais 3D alimentadas por IA projetadas para áreas com conectividade limitada. Experimente educação imersiva que funciona em qualquer lugar, a qualquer hora.",
+    "loginStudent": "Conectar como Estudante",
+    "loginTeacher": "Conectar como Professor",
+    "exploreDemo": "Explorar Demo →"
+  },
+  "features": {
+    "title": "Por Que Escolher AetherLearn?",
+    "subtitle": "Fechando a lacuna digital com tecnologia inovadora offline-first",
+    "offline": {
+      "title": "Offline Primeiro",
+      "description": "Funciona perfeitamente sem internet. Todo o conteúdo é sincronizado automaticamente quando online."
+    },
+    "ai": {
+      "title": "Alimentado por IA",
+      "description": "Salas de aula virtuais 3D inteligentes com aulas interativas e feedback instantâneo."
+    },
+    "collaborative": {
+      "title": "Colaborativo",
+      "description": "Aprendizagem gamificada com placar de classificação, quizzes e rastreamento de progresso."
+    }
+  },
+  "cta": {
+    "title": "Pronto Para Transformar a Educação?",
+    "description": "Junte-se a milhares de alunos e professores que já usam AetherLearn",
+    "registerNow": "Registre-se Agora",
+    "tryDemo": "Tente Demo"
+  },
+  "footer": {
+    "copyright": "© 2025 AetherLearn - Construído para Hackathon de Educação 2025",
+    "tagline": "Aprendizagem Interativa, Até Mesmo Offline"
+  },
+  "language": "Alterar idioma",
+  "theme": "Alterar tema"
+}

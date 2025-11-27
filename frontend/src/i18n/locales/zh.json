@@ -1,0 +1,42 @@
+{
+  "header": {
+    "login": "登录",
+    "getStarted": "开始"
+  },
+  "hero": {
+    "title": "互动学习，",
+    "subtitle": "即使离线",
+    "description": "为互联网连接有限的地区设计的AI驱动的3D虚拟教室。体验可在任何地方、任何时间工作的沉浸式教育。",
+    "loginStudent": "作为学生登录",
+    "loginTeacher": "作为教师登录",
+    "exploreDemo": "探索演示 →"
+  },
+  "features": {
+    "title": "为什么选择AetherLearn?",
+    "subtitle": "用创新的离线优先技术弥补数字鸿沟",
+    "offline": {
+      "title": "离线优先",
+      "description": "在没有互联网的情况下无缝运作。联机时所有内容会自动同步。"
+    },
+    "ai": {
+      "title": "AI驱动",
+      "description": "具有交互式课程和即时反馈的智能3D虚拟教室。"
+    },
+    "collaborative": {
+      "title": "协作",
+      "description": "具有排行榜、测验和进度跟踪的游戏化学习。"
+    }
+  },
+  "cta": {
+    "title": "准备好改变教育了吗?",
+    "description": "加入已在使用AetherLearn的数千名学生和教师",
+    "registerNow": "立即注册",
+    "tryDemo": "尝试演示"
+  },
+  "footer": {
+    "copyright": "© 2025 AetherLearn - 为教育黑客马拉松2025而构建",
+    "tagline": "互动学习，即使离线"
+  },
+  "language": "更改语言",
+  "theme": "更改主题"
+}

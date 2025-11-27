@@ -1,0 +1,42 @@
+{
+  "header": {
+    "login": "Connexion",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "title": "Apprentissage Interactif,",
+    "subtitle": "Même Hors Ligne",
+    "description": "Salles de classe virtuelles 3D alimentées par l'IA conçues pour les zones à connectivité limitée. Vivez une éducation immersive qui fonctionne n'importe où, n'importe quand.",
+    "loginStudent": "Se Connecter en tant qu'Étudiant",
+    "loginTeacher": "Se Connecter en tant que Professeur",
+    "exploreDemo": "Explorer la Démo →"
+  },
+  "features": {
+    "title": "Pourquoi Choisir AetherLearn?",
+    "subtitle": "Combler le fossé numérique avec une technologie innovante hors ligne",
+    "offline": {
+      "title": "Hors Ligne d'Abord",
+      "description": "Fonctionne parfaitement sans Internet. Tout le contenu se synchronise automatiquement en ligne."
+    },
+    "ai": {
+      "title": "Alimenté par l'IA",
+      "description": "Salles de classe virtuelles 3D intelligentes avec leçons interactives et retours instantanés."
+    },
+    "collaborative": {
+      "title": "Collaboratif",
+      "description": "Apprentissage gamifié avec classements, quiz et suivi des progrès."
+    }
+  },
+  "cta": {
+    "title": "Prêt à Transformer l'Éducation?",
+    "description": "Rejoignez des milliers d'étudiants et d'enseignants utilisant déjà AetherLearn",
+    "registerNow": "S'Inscrire Maintenant",
+    "tryDemo": "Essayer la Démo"
+  },
+  "footer": {
+    "copyright": "© 2025 AetherLearn - Construit pour le Hackathon Éducation 2025",
+    "tagline": "Apprentissage Interactif, Même Hors Ligne"
+  },
+  "language": "Changer de langue",
+  "theme": "Changer le thème"
+}

@@ -1,0 +1,42 @@
+{
+  "header": {
+    "login": "ログイン",
+    "getStarted": "始める"
+  },
+  "hero": {
+    "title": "インタラクティブラーニング、",
+    "subtitle": "オフラインでも",
+    "description": "インターネット接続が限定されている地域向けに設計されたAI駆動の3D仮想教室。どこでもいつでも機能する没入型教育を体験してください。",
+    "loginStudent": "学生としてログイン",
+    "loginTeacher": "教師としてログイン",
+    "exploreDemo": "デモを探索 →"
+  },
+  "features": {
+    "title": "AetherLearnを選ぶ理由",
+    "subtitle": "革新的なオフラインファーストテクノロジーでデジタル格差を埋める",
+    "offline": {
+      "title": "オフラインファースト",
+      "description": "インターネットなしでシームレスに動作。オンライン時にすべてのコンテンツが自動的に同期されます。"
+    },
+    "ai": {
+      "title": "AI駆動",
+      "description": "インタラクティブなレッスンと即座のフィードバック機能を持つインテリジェント3D仮想教室。"
+    },
+    "collaborative": {
+      "title": "協調的",
+      "description": "リーダーボード、クイズ、進捗追跡を備えたゲーミフィケーション学習。"
+    }
+  },
+  "cta": {
+    "title": "教育を変える準備はできていますか？",
+    "description": "すでにAetherLearnを使用している数千人の学生と教師に参加してください",
+    "registerNow": "今すぐ登録",
+    "tryDemo": "デモを試す"
+  },
+  "footer": {
+    "copyright": "© 2025 AetherLearn - 教育ハッカソン2025向けに構築",
+    "tagline": "インタラクティブラーニング、オフラインでも"
+  },
+  "language": "言語を変更",
+  "theme": "テーマを変更"
+}

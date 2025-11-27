@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { BookOpen, Wifi, WifiOff } from "lucide-react";
+import { Wifi, WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
+import AetherLearnLogo from "./AetherLearnLogo";
 
 const Header = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -18,12 +19,18 @@ const Header = () => {
     };
   }, []);
 
+  // Determine redirect path based on login status
+  const getLogoLink = () => {
+    const userType = localStorage.getItem("userType");
+    return userType ? "/dashboard" : "/";
+  };
+
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <BookOpen className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold text-foreground">AetherLearn</span>
+        <Link to={getLogoLink()} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <AetherLearnLogo size="md" showText={false} />
+          <span className="text-xl font-bold text-foreground hidden sm:inline">AetherLearn</span>
         </Link>
 
         <div className="flex items-center gap-2">

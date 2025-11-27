@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Pause, StickyNote } from "lucide-react";
 import Header from "@/components/Header";
+import AIQAWidget from "@/components/AIQAWidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -135,9 +136,9 @@ const LecturePage = () => {
           {lecture.topic}
         </h1>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Lecture Area */}
-          <div className="lg:col-span-2 space-y-4">
+        <div className="grid lg:grid-cols-1 gap-6">
+          {/* Main Lecture Area - Full Width */}
+          <div className="space-y-4">
             {/* 3D Classroom Container */}
             <Card className="relative aspect-video bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl overflow-hidden shadow-elevated">
               <div className="w-full h-full">
@@ -214,40 +215,9 @@ const LecturePage = () => {
                 </Button>
               )}
             </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="space-y-4">
-            <Card className="p-6">
-              <h3 className="font-semibold text-foreground mb-4">Lecture Details</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Subject</p>
-                  <p className="font-medium text-foreground">{lecture.subject}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Grade</p>
-                  <p className="font-medium text-foreground">{lecture.grade}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Duration</p>
-                  <p className="font-medium text-foreground">{lectureMinutes} minutes</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Progress</p>
-                  <p className="font-medium text-foreground">{progressPercent}%</p>
-                </div>
-              </div>
-            </Card>
-
-            {showNotes && (
-              <Card className="p-6">
-                <h3 className="font-semibold text-foreground mb-4">Lecture Notes</h3>
-                <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {lecture.notes}
-                </div>
-              </Card>
-            )}
+            {/* AI Q&A Widget */}
+            <AIQAWidget lectureId={lecture.id} lectureTopic={lecture.topic} />
           </div>
         </div>
       </main>

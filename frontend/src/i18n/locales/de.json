@@ -1,0 +1,42 @@
+{
+  "header": {
+    "login": "Anmelden",
+    "getStarted": "Jetzt Starten"
+  },
+  "hero": {
+    "title": "Interaktives Lernen,",
+    "subtitle": "Auch Offline",
+    "description": "Intelligente 3D-Klassenräume für Bereiche mit begrenzter Internetverbindung. Erleben Sie immersives Lernen, das überall funktioniert.",
+    "loginStudent": "Als Schüler Anmelden",
+    "loginTeacher": "Als Lehrer Anmelden",
+    "exploreDemo": "Demo Erkunden →"
+  },
+  "features": {
+    "title": "Warum AetherLearn?",
+    "subtitle": "Überbrückung der digitalen Kluft mit innovativer Offline-Technologie",
+    "offline": {
+      "title": "Offline-First",
+      "description": "Funktioniert nahtlos ohne Internet. Alle Inhalte werden automatisch synchronisiert."
+    },
+    "ai": {
+      "title": "KI-Gesteuert",
+      "description": "Intelligente 3D-Klassenräume mit interaktiven Lektionen und sofortigem Feedback."
+    },
+    "collaborative": {
+      "title": "Kollaborativ",
+      "description": "Gamifiziertes Lernen mit Bestenlisten, Quiz und Fortschrittsverfolgung."
+    }
+  },
+  "cta": {
+    "title": "Bereit, die Bildung zu Verändern?",
+    "description": "Treten Sie Tausenden von Schülern und Lehrern bei, die bereits AetherLearn nutzen",
+    "registerNow": "Jetzt Registrieren",
+    "tryDemo": "Demo Versuchen"
+  },
+  "footer": {
+    "copyright": "© 2025 AetherLearn - Gebaut für Education Hackathon 2025",
+    "tagline": "Interaktives Lernen, Auch Offline"
+  },
+  "language": "Sprache ändern",
+  "theme": "Thema ändern"
+}

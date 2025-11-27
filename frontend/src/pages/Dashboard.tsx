@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
 import { BookOpen, ClipboardCheck, FileText, TrendingUp } from "lucide-react";
 import Header from "@/components/Header";
-import SideNav from "@/components/SideNav";
 import StatsCard from "@/components/StatsCard";
 import LectureCard from "@/components/LectureCard";
 import { Button } from "@/components/ui/button";
@@ -13,7 +11,6 @@ import testsData from "@/data/tests.json";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [sideNavOpen, setSideNavOpen] = useState(false);
   const userName = localStorage.getItem("userName") || "Student";
 
   // Calculate real stats from localStorage
@@ -42,20 +39,10 @@ const Dashboard = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
-      <SideNav isOpen={sideNavOpen} onClose={() => setSideNavOpen(false)} />
+    <div className="min-h-screen bg-background flex flex-col w-full">
+      <Header />
 
-      <div className="flex-1 flex flex-col lg:ml-64">
-        <Header />
-
-        <main className="flex-1 container mx-auto px-4 py-8">
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setSideNavOpen(true)}
-            className="lg:hidden mb-4 p-2 rounded-lg bg-card border border-border"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
+      <main className="flex-1 container mx-auto px-4 py-8">
 
           {/* Welcome Section */}
           <div className="mb-8">
@@ -131,8 +118,7 @@ const Dashboard = () => {
               </Button>
             </div>
           </section>
-        </main>
-      </div>
+      </main>
     </div>
   );
 };

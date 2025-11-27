@@ -1,23 +1,36 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Wifi, Brain, Users } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/LanguageSelector";
+import AetherLearnLogo from "@/components/AetherLearnLogo";
+import { useTranslation } from "react-i18next";
 
 const LandingPage = () => {
+  const { t } = useTranslation();
+
+  // Check if user is logged in and redirect to dashboard
+  const getLogoLink = () => {
+    const userType = localStorage.getItem("userType");
+    return userType ? "/dashboard" : "/";
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">AetherLearn</span>
-          </div>
+          <Link to={getLogoLink()} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <AetherLearnLogo size="md" showText={false} />
+            <span className="text-xl font-bold text-foreground hidden sm:inline">AetherLearn</span>
+          </Link>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <LanguageSelector />
             <Link to="/login">
-              <Button variant="ghost">Login</Button>
+              <Button variant="ghost">{t("header.login")}</Button>
             </Link>
             <Link to="/register">
-              <Button>Get Started</Button>
+              <Button>{t("header.getStarted")}</Button>
             </Link>
           </div>
         </div>
@@ -28,28 +41,27 @@ const LandingPage = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
-              Interactive Learning,
-              <span className="text-primary"> Even Offline</span>
+              {t("hero.title")}
+              <span className="text-primary"> {t("hero.subtitle")}</span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              AI-powered 3D virtual classrooms designed for areas with limited internet connectivity. 
-              Experience immersive education that works anywhere, anytime.
+              {t("hero.description")}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/login">
                 <Button size="lg" className="text-lg px-8">
-                  Login as Student
+                  {t("hero.loginStudent")}
                 </Button>
               </Link>
               <Link to="/login">
                 <Button size="lg" variant="outline" className="text-lg px-8">
-                  Login as Teacher
+                  {t("hero.loginTeacher")}
                 </Button>
               </Link>
             </div>
             <Link to="/dashboard">
               <Button variant="ghost" size="lg" className="text-primary">
-                Explore Demo →
+                {t("hero.exploreDemo")}
               </Button>
             </Link>
           </div>
@@ -67,10 +79,10 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Why Choose AetherLearn?
+              {t("features.title")}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Bridging the digital divide with innovative offline-first technology
+              {t("features.subtitle")}
             </p>
           </div>
 
@@ -79,9 +91,9 @@ const LandingPage = () => {
               <div className="bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
                 <Wifi className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Offline-First</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">{t("features.offline.title")}</h3>
               <p className="text-muted-foreground">
-                Works seamlessly without internet. All content syncs automatically when online.
+                {t("features.offline.description")}
               </p>
             </div>
 
@@ -89,9 +101,9 @@ const LandingPage = () => {
               <div className="bg-accent/10 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
                 <Brain className="h-8 w-8 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">AI-Powered</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">{t("features.ai.title")}</h3>
               <p className="text-muted-foreground">
-                Intelligent 3D virtual classrooms with interactive lessons and instant feedback.
+                {t("features.ai.description")}
               </p>
             </div>
 
@@ -99,9 +111,9 @@ const LandingPage = () => {
               <div className="bg-warning/10 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
                 <Users className="h-8 w-8 text-warning" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Collaborative</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-3">{t("features.collaborative.title")}</h3>
               <p className="text-muted-foreground">
-                Gamified learning with leaderboards, quizzes, and progress tracking.
+                {t("features.collaborative.description")}
               </p>
             </div>
           </div>
@@ -112,20 +124,20 @@ const LandingPage = () => {
       <section className="container mx-auto px-4 py-20">
         <div className="bg-gradient-hero text-white rounded-3xl p-12 lg:p-20 text-center shadow-elevated">
           <h2 className="text-3xl lg:text-5xl font-bold mb-6">
-            Ready to Transform Education?
+            {t("cta.title")}
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Join thousands of students and teachers already using AetherLearn
+            {t("cta.description")}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/register">
               <Button size="lg" variant="secondary" className="text-lg px-8">
-                Register Now
+                {t("cta.registerNow")}
               </Button>
             </Link>
             <Link to="/dashboard">
               <Button size="lg" variant="outline" className="text-lg px-8 border-white text-white hover:bg-white hover:text-primary">
-                Try Demo
+                {t("cta.tryDemo")}
               </Button>
             </Link>
           </div>
@@ -136,14 +148,14 @@ const LandingPage = () => {
       <footer className="bg-card border-t border-border py-8">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <BookOpen className="h-5 w-5 text-primary" />
+            <AetherLearnLogo size="sm" showText={false} />
             <span className="font-bold text-foreground">AetherLearn</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2025 AetherLearn - Built for Education Hackathon 2025
+            {t("footer.copyright")}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Interactive Learning, Even Offline
+            {t("footer.tagline")}
           </p>
         </div>
       </footer>
