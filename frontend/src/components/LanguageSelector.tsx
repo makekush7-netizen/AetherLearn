@@ -9,14 +9,21 @@ import {
 import { useTranslation } from "react-i18next";
 
 const languages = [
+  // International Languages
   { code: "en", name: "English", flag: "🇺🇸" },
   { code: "es", name: "Español", flag: "🇪🇸" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
-  { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
   { code: "zh", name: "中文", flag: "🇨🇳" },
   { code: "ja", name: "日本語", flag: "🇯🇵" },
   { code: "pt", name: "Português", flag: "🇵🇹" },
+  // Indian Regional Languages
+  { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
+  { code: "mr", name: "मराठी", flag: "🇮🇳" },
+  { code: "ta", name: "தமிழ்", flag: "🇮🇳" },
+  { code: "te", name: "తెలుగు", flag: "🇮🇳" },
+  { code: "kn", name: "ಕನ್ನಡ", flag: "🇮🇳" },
+  { code: "bn", name: "বাংলা", flag: "🇮🇳" },
 ];
 
 const LanguageSelector = () => {
@@ -39,7 +46,7 @@ const LanguageSelector = () => {
           <Globe className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-56 max-h-80 overflow-y-auto">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}

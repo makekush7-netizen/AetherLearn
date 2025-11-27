@@ -10,6 +10,11 @@ import hi from "./locales/hi.json";
 import zh from "./locales/zh.json";
 import ja from "./locales/ja.json";
 import pt from "./locales/pt.json";
+import mr from "./locales/mr.json";
+import ta from "./locales/ta.json";
+import te from "./locales/te.json";
+import kn from "./locales/kn.json";
+import bn from "./locales/bn.json";
 
 const resources = {
   en: { translation: en },
@@ -20,6 +25,11 @@ const resources = {
   zh: { translation: zh },
   ja: { translation: ja },
   pt: { translation: pt },
+  mr: { translation: mr },
+  ta: { translation: ta },
+  te: { translation: te },
+  kn: { translation: kn },
+  bn: { translation: bn },
 };
 
 i18n
