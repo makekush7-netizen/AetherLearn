@@ -33,12 +33,27 @@ CREATE TABLE IF NOT EXISTS classes (
 
 -- Lectures table
 CREATE TABLE IF NOT EXISTS lectures (
-    id VARCHAR(50) PRIMARY KEY,
-    topic VARCHAR(200) NOT NULL,
+    id VARCHAR(100) PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    topic VARCHAR(200),
     subject VARCHAR(100),
     grade VARCHAR(20),
     duration_seconds INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_by INT,
+    metadata JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Class-Lecture assignment table (which lectures are assigned to which classes)
+CREATE TABLE IF NOT EXISTS class_lectures (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id VARCHAR(50) NOT NULL,
+    lecture_id VARCHAR(100) NOT NULL,
+    assigned_by INT,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_class_lecture (class_id, lecture_id)
 );
 
 -- Lecture progress table

@@ -7,15 +7,21 @@ interface ClassroomProps {
   onLoaded?: () => void;
   currentSlide?: number;
   slides?: string[];
+  audioFiles?: string[]; // Audio files corresponding to each slide
+  onSlideComplete?: () => void; // Called when current slide's audio finishes
 }
 
 export function Classroom({ 
   isPlaying = false, 
   onLoaded, 
   currentSlide = 0, 
-  slides = [] 
+  slides = [],
+  audioFiles = [],
+  onSlideComplete
 }: ClassroomProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isAudioPlayingRef = useRef<boolean>(false);
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -114,16 +120,16 @@ export function Classroom({
       (error) => console.error('Error loading classroom:', error)
     );
 
-    // Load lecturer - EXACT settings from original script.js
+    // Load lecturer
     loader.load(
       '/models/lecturer.glb',
       (gltf) => {
         console.log('✓ Lecturer loaded');
         const lecturer = gltf.scene;
         
-        // EXACT position from original script.js
+        // Position adjusted - moved slightly towards camera to avoid clipping with whiteboard
         lecturer.scale.set(1.1, 1.1, 1.1);
-        lecturer.position.set(-2.2, 0, -1.4);
+        lecturer.position.set(-2.0, 0, -1.2); // Moved from (-2.2, 0, -1.4)
         lecturer.rotation.y = Math.PI / 3;
         
         scene.add(lecturer);
@@ -196,8 +202,138 @@ export function Classroom({
         container.removeChild(renderer.domElement);
       }
       sceneRef.current = null;
+      // Stop any playing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, [onLoaded]);
+
+  // Track if we should autoplay on load
+  const shouldAutoplayRef = useRef<boolean>(false);
+
+  // Handle audio playback synced with slides
+  useEffect(() => {
+    // Create audio element if not exists
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+
+    const audio = audioRef.current;
+    
+    // Define the ended handler
+    const handleEnded = () => {
+      console.log('Audio ended, calling onSlideComplete');
+      onSlideComplete?.();
+    };
+    
+    // Handle canplaythrough to autoplay when ready
+    const handleCanPlay = () => {
+      if (shouldAutoplayRef.current && isPlaying) {
+        console.log('Audio ready, autoplaying...');
+        audio.play().catch(err => console.log('Autoplay failed:', err.message));
+      }
+    };
+    
+    // Add event listeners
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('canplaythrough', handleCanPlay);
+    
+    // Load audio for current slide
+    if (audioFiles.length > 0 && currentSlide >= 0 && currentSlide < audioFiles.length) {
+      const audioUrl = audioFiles[currentSlide];
+      console.log('Loading audio for slide', currentSlide, ':', audioUrl);
+      
+      // Check if source changed
+      const fullUrl = new URL(audioUrl, window.location.href).href;
+      if (audio.src !== fullUrl) {
+        // Mark that we should autoplay when loaded (if currently playing)
+        shouldAutoplayRef.current = isPlaying;
+        audio.src = audioUrl;
+        audio.load();
+      }
+    }
+
+    return () => {
+      // Cleanup listeners on unmount or when deps change
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('canplaythrough', handleCanPlay);
+    };
+  }, [currentSlide, audioFiles, onSlideComplete, isPlaying]);
+
+  // Control audio playback based on isPlaying
+  useEffect(() => {
+    if (!audioRef.current) return;
+    
+    const audio = audioRef.current;
+    
+    // Update animation when audio play state changes
+    const updateSpeakingAnimation = (speaking: boolean) => {
+      if (!sceneRef.current?.mixer) return;
+      const { animations } = sceneRef.current;
+      
+      console.log('Available animations:', Object.keys(animations));
+      
+      if (speaking) {
+        // Try different possible animation names for speaking/talking
+        const speakingAnimName = Object.keys(animations).find(name => 
+          name.toLowerCase().includes('talk') || 
+          name.toLowerCase().includes('speak') ||
+          name.toLowerCase().includes('gesture') ||
+          name.toLowerCase().includes('explain')
+        );
+        
+        if (speakingAnimName) {
+          console.log('Playing speaking animation:', speakingAnimName);
+          Object.values(animations).forEach(a => a.fadeOut(0.3));
+          animations[speakingAnimName].reset().fadeIn(0.3).play();
+        } else {
+          console.log('No speaking animation found, available:', Object.keys(animations));
+        }
+      } else {
+        // Switch back to idle
+        const idleAnimName = Object.keys(animations).find(name => 
+          name.toLowerCase().includes('idle')
+        ) || Object.keys(animations)[0];
+        
+        if (idleAnimName && animations[idleAnimName]) {
+          console.log('Playing idle animation:', idleAnimName);
+          Object.values(animations).forEach(a => a.fadeOut(0.3));
+          animations[idleAnimName].reset().fadeIn(0.3).play();
+        }
+      }
+    };
+    
+    // Handle play/pause events
+    const handlePlay = () => {
+      isAudioPlayingRef.current = true;
+      updateSpeakingAnimation(true);
+    };
+    
+    const handlePause = () => {
+      isAudioPlayingRef.current = false;
+      updateSpeakingAnimation(false);
+    };
+    
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handlePause);
+    
+    if (isPlaying) {
+      audio.play().catch(err => {
+        console.log('Audio play failed:', err.message);
+      });
+    } else {
+      audio.pause();
+    }
+    
+    return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handlePause);
+    };
+  }, [isPlaying]);
 
   // Handle slide changes
   useEffect(() => {
@@ -267,25 +403,6 @@ export function Classroom({
 
     loadSlide();
   }, [currentSlide, slides]);
-
-  // Handle play state for animations
-  useEffect(() => {
-    if (!sceneRef.current?.mixer) return;
-
-    const { animations } = sceneRef.current;
-
-    if (isPlaying) {
-      if (animations['SpeakingIdle']) {
-        Object.values(animations).forEach(a => a.fadeOut(0.3));
-        animations['SpeakingIdle'].reset().fadeIn(0.3).play();
-      }
-    } else {
-      if (animations['Idle']) {
-        Object.values(animations).forEach(a => a.fadeOut(0.3));
-        animations['Idle'].reset().fadeIn(0.3).play();
-      }
-    }
-  }, [isPlaying]);
 
   return (
     <div 

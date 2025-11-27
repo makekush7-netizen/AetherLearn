@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, BookOpen, ClipboardCheck, FileText, Trophy, 
   User, Settings, LogOut, ChevronLeft, ChevronRight, Menu, X,
-  Wifi, WifiOff, Globe, Moon, Sun
+  Wifi, WifiOff, Globe, Moon, Sun, Users, PlusCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -48,6 +48,7 @@ const Sidebar = ({ children }: SidebarProps) => {
   
   const userName = localStorage.getItem("userName") || "Student";
   const userEmail = localStorage.getItem("userEmail") || "student@aetherlearn.com";
+  const userType = localStorage.getItem("userType") || "student";
   const userInitials = userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
   useEffect(() => {
@@ -78,13 +79,25 @@ const Sidebar = ({ children }: SidebarProps) => {
     navigate("/");
   };
 
-  const navItems = [
+  // Navigation items based on user type
+  const studentNavItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: BookOpen, label: "Lectures", path: "/dashboard", badge: "3" },
     { icon: ClipboardCheck, label: "Quizzes", path: "/quiz/1" },
     { icon: FileText, label: "Tests", path: "/test/1" },
     { icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
   ];
+
+  const teacherNavItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: Users, label: "My Students", path: "/dashboard" },
+    { icon: BookOpen, label: "Assign Lectures", path: "/dashboard" },
+    { icon: ClipboardCheck, label: "Quiz Results", path: "/dashboard" },
+    { icon: FileText, label: "Tests & Exams", path: "/dashboard" },
+    { icon: PlusCircle, label: "Create Class", path: "/dashboard" },
+  ];
+
+  const navItems = userType === "teacher" ? teacherNavItems : studentNavItems;
 
   const currentLang = languages.find(l => l.code === i18n.language) || languages[0];
 

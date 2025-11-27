@@ -46,6 +46,14 @@ __pycache__/
 venv/
 .venv/
 
+# KokoroTTS large model files (download separately)
+KokoroTTS/*.onnx
+KokoroTTS/*.bin
+
+# Generated audio files (can be regenerated)
+frontend/public/audio/
+frontend/public/lectures/
+
 # Lovable backup (already integrated)
 frontend/aetherlearn-offline-main/
 frontend/src_old/

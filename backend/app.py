@@ -1,12 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from database import get_db_connection, init_database
 from auth import hash_password, verify_password, generate_token, token_required
 from config import Config
+from lecture_generator import LectureGenerator, VOICES
+from datetime import datetime
 import json
+import os
+from pathlib import Path
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:5173', 'http://127.0.0.1:5173'])
+CORS(app, origins=['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'])
+
+# Lecture output directory
+LECTURES_DIR = Path(__file__).parent.parent / "frontend" / "public" / "lectures"
 
 # ==================== AUTH ROUTES ====================
 
@@ -526,6 +533,197 @@ def get_leaderboard():
         
         return jsonify({'leaderboard': leaderboard}), 200
         
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# ==================== LECTURE GENERATION ROUTES ====================
+
+@app.route('/api/lectures/voices', methods=['GET'])
+def get_available_voices():
+    """Get list of available TTS voices"""
+    return jsonify({
+        'voices': {
+            'male': list(VOICES['male'].keys()),
+            'female': list(VOICES['female'].keys())
+        }
+    }), 200
+
+
+@app.route('/api/lectures/generate', methods=['POST'])
+@token_required
+def generate_lecture():
+    """
+    Generate a new lecture with audio and slides
+    
+    Request body:
+    {
+        "title": "Lecture Title",
+        "script": "SLIDE: Title\n- content\n\nSPEECH: narration [POINT] ...",
+        "voice": "liam",  // optional, default: liam
+        "speed": 0.95,    // optional, default: 0.95
+        "theme": "dark",  // optional: dark or light
+        "accentColor": "#6366f1"  // optional
+    }
+    """
+    data = request.get_json()
+    
+    title = data.get('title')
+    script = data.get('script')
+    
+    if not title or not script:
+        return jsonify({'error': 'Title and script are required'}), 400
+    
+    voice = data.get('voice', 'liam')
+    speed = data.get('speed', 0.95)
+    theme = data.get('theme', 'dark')
+    accent_color = data.get('accentColor', '#6366f1')
+    
+    # Generate unique lecture ID
+    lecture_id = f"lecture_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{request.user_id}"
+    
+    try:
+        # Initialize generator
+        generator = LectureGenerator(voice=voice, speed=speed)
+        
+        # Generate lecture
+        lecture_data = generator.generate_lecture(
+            lecture_id=lecture_id,
+            title=title,
+            script=script,
+            theme=theme,
+            accent_color=accent_color
+        )
+        
+        # Store in database
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO lectures (id, title, created_by, metadata)
+                    VALUES (%s, %s, %s, %s)
+                """, (lecture_id, title, request.user_id, json.dumps(lecture_data)))
+                conn.commit()
+            except Exception as db_err:
+                print(f"Warning: Could not save to database: {db_err}")
+            finally:
+                cursor.close()
+                conn.close()
+        
+        return jsonify({
+            'message': 'Lecture generated successfully',
+            'lecture': lecture_data
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to generate lecture: {str(e)}'}), 500
+
+
+@app.route('/api/lectures', methods=['GET'])
+@token_required
+def list_lectures():
+    """List all lectures created by the user (teachers) or available to user (students)"""
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection failed'}), 500
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get user type
+        cursor.execute("SELECT user_type, class_id FROM users WHERE id = %s", (request.user_id,))
+        user = cursor.fetchone()
+        
+        if user['user_type'] == 'teacher':
+            # Teachers see their own lectures
+            cursor.execute("""
+                SELECT id, title, created_at, metadata 
+                FROM lectures 
+                WHERE created_by = %s
+                ORDER BY created_at DESC
+            """, (request.user_id,))
+        else:
+            # Students see lectures assigned to their class
+            cursor.execute("""
+                SELECT l.id, l.title, l.created_at, l.metadata
+                FROM lectures l
+                JOIN class_lectures cl ON l.id = cl.lecture_id
+                WHERE cl.class_id = %s
+                ORDER BY l.created_at DESC
+            """, (user['class_id'],))
+        
+        lectures = cursor.fetchall()
+        
+        # Parse metadata JSON
+        for lecture in lectures:
+            if lecture.get('metadata'):
+                try:
+                    lecture['metadata'] = json.loads(lecture['metadata'])
+                except:
+                    pass
+        
+        return jsonify({'lectures': lectures}), 200
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/api/lectures/<lecture_id>', methods=['GET'])
+def get_lecture(lecture_id):
+    """Get a specific lecture by ID"""
+    lecture_path = LECTURES_DIR / lecture_id / "lecture.json"
+    
+    if not lecture_path.exists():
+        return jsonify({'error': 'Lecture not found'}), 404
+    
+    try:
+        with open(lecture_path, 'r', encoding='utf-8') as f:
+            lecture_data = json.load(f)
+        return jsonify({'lecture': lecture_data}), 200
+    except Exception as e:
+        return jsonify({'error': f'Failed to load lecture: {str(e)}'}), 500
+
+
+@app.route('/api/lectures/<lecture_id>/assign', methods=['POST'])
+@token_required
+def assign_lecture_to_class(lecture_id):
+    """Assign a lecture to a class (teachers only)"""
+    data = request.get_json()
+    class_id = data.get('classId')
+    
+    if not class_id:
+        return jsonify({'error': 'Class ID is required'}), 400
+    
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection failed'}), 500
+    
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Verify user is a teacher
+        cursor.execute("SELECT user_type FROM users WHERE id = %s", (request.user_id,))
+        user = cursor.fetchone()
+        if user['user_type'] != 'teacher':
+            return jsonify({'error': 'Only teachers can assign lectures'}), 403
+        
+        # Assign lecture to class
+        cursor.execute("""
+            INSERT INTO class_lectures (class_id, lecture_id, assigned_by, assigned_at)
+            VALUES (%s, %s, %s, NOW())
+            ON DUPLICATE KEY UPDATE assigned_at = NOW()
+        """, (class_id, lecture_id, request.user_id))
+        
+        conn.commit()
+        
+        return jsonify({'message': 'Lecture assigned to class'}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
     finally:
         cursor.close()
         conn.close()

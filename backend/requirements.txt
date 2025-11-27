@@ -4,3 +4,9 @@ mysql-connector-python==8.2.0
 bcrypt==4.1.1
 PyJWT==2.8.0
 python-dotenv==1.0.0
+
+# TTS dependencies (for lecture generation)
+kokoro-onnx
+numpy
+scipy
+sounddevice
