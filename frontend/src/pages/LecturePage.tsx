@@ -16,6 +16,12 @@ interface Caption {
   text: string;
 }
 
+interface Slide {
+  image: string;
+  time_start: number;
+  title: string;
+}
+
 interface Lecture {
   id: string;
   topic: string;
@@ -25,6 +31,7 @@ interface Lecture {
   audio_url: string;
   duration_seconds: number;
   captions: Caption[];
+  slides?: Slide[];
   notes: string;
   lecturer_animation: string;
 }
@@ -38,11 +45,15 @@ const LecturePage = () => {
   const [duration, setDuration] = useState(0);
   const [currentCaption, setCurrentCaption] = useState("");
   const [classroomLoaded, setClassroomLoaded] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Find lecture by id
   const lecture = lecturesData.lectures.find((l) => l.id === id) as Lecture | undefined;
   const quiz = quizzesData.quizzes.find((q) => q.lecture_id === id);
+
+  // Get slide images array for passing to Classroom
+  const slideImages = lecture?.slides?.map(s => s.image) || [];
 
   // Update caption based on current time
   useEffect(() => {
@@ -52,6 +63,22 @@ const LecturePage = () => {
       (c) => currentTime >= c.time_start && currentTime < c.time_end
     );
     setCurrentCaption(caption?.text || "");
+  }, [currentTime, lecture]);
+
+  // Update current slide based on audio time
+  useEffect(() => {
+    if (!lecture?.slides || lecture.slides.length === 0) return;
+    
+    // Find the slide that matches the current time (last slide whose time_start <= currentTime)
+    let slideIndex = 0;
+    for (let i = 0; i < lecture.slides.length; i++) {
+      if (currentTime >= lecture.slides[i].time_start) {
+        slideIndex = i;
+      } else {
+        break;
+      }
+    }
+    setCurrentSlide(slideIndex);
   }, [currentTime, lecture]);
 
   // Audio event handlers
@@ -145,6 +172,8 @@ const LecturePage = () => {
                 <Classroom 
                   isPlaying={isPlaying} 
                   onLoaded={() => setClassroomLoaded(true)}
+                  currentSlide={currentSlide}
+                  slides={slideImages}
                 />
               </div>
 

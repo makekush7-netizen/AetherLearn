@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#bg2)"/>
+  
+  <!-- Header bar -->
+  <rect x="0" y="0" width="1920" height="120" fill="#4ade80" opacity="0.15"/>
+  <text x="100" y="80" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#4ade80">
+    What is Photosynthesis?
+  </text>
+  
+  <!-- Main content area -->
+  <rect x="80" y="180" width="1760" height="800" rx="20" fill="#ffffff" opacity="0.05"/>
+  
+  <!-- Definition box -->
+  <rect x="120" y="220" width="800" height="250" rx="15" fill="#22c55e" opacity="0.2"/>
+  <text x="160" y="280" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#4ade80">
+    Definition
+  </text>
+  <text x="160" y="340" font-family="Arial, sans-serif" font-size="28" fill="#ffffff">
+    The process by which plants convert
+  </text>
+  <text x="160" y="385" font-family="Arial, sans-serif" font-size="28" fill="#ffffff">
+    light energy into chemical energy
+  </text>
+  <text x="160" y="430" font-family="Arial, sans-serif" font-size="28" fill="#ffffff">
+    stored in glucose molecules.
+  </text>
+  
+  <!-- Formula box -->
+  <rect x="120" y="500" width="800" height="150" rx="15" fill="#3b82f6" opacity="0.2"/>
+  <text x="160" y="560" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#60a5fa">
+    Chemical Equation
+  </text>
+  <text x="160" y="620" font-family="Courier New, monospace" font-size="32" fill="#ffffff">
+    6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂
+  </text>
+  
+  <!-- Diagram area -->
+  <g transform="translate(1100, 400)">
+    <!-- Sun -->
+    <circle cx="0" cy="-100" r="60" fill="#fbbf24"/>
+    <text x="0" y="-90" font-family="Arial, sans-serif" font-size="20" fill="#1a1a2e" text-anchor="middle">SUN</text>
+    
+    <!-- Light rays -->
+    <line x1="0" y1="-30" x2="0" y2="50" stroke="#fbbf24" stroke-width="4" stroke-dasharray="10,5"/>
+    
+    <!-- Plant/Leaf -->
+    <ellipse cx="0" cy="150" rx="100" ry="50" fill="#4ade80"/>
+    <ellipse cx="0" cy="150" rx="80" ry="40" fill="#22c55e"/>
+    <line x1="0" y1="200" x2="0" y2="300" stroke="#65a30d" stroke-width="8"/>
+    <text x="0" y="160" font-family="Arial, sans-serif" font-size="18" fill="#1a1a2e" text-anchor="middle">PLANT</text>
+    
+    <!-- Arrows and labels -->
+    <g transform="translate(-180, 150)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="22" fill="#60a5fa">CO₂</text>
+      <line x1="40" y1="-8" x2="80" y2="-8" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrow)"/>
+    </g>
+    
+    <g transform="translate(-180, 220)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="22" fill="#38bdf8">H₂O</text>
+      <line x1="40" y1="-8" x2="80" y2="-8" stroke="#38bdf8" stroke-width="3"/>
+    </g>
+    
+    <g transform="translate(120, 150)">
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#fbbf24" stroke-width="3"/>
+      <text x="50" y="5" font-family="Arial, sans-serif" font-size="22" fill="#fbbf24">Glucose</text>
+    </g>
+    
+    <g transform="translate(120, 220)">
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#a78bfa" stroke-width="3"/>
+      <text x="50" y="5" font-family="Arial, sans-serif" font-size="22" fill="#a78bfa">O₂</text>
+    </g>
+  </g>
+  
+  <!-- Key points -->
+  <rect x="120" y="680" width="1680" height="280" rx="15" fill="#ffffff" opacity="0.03"/>
+  <text x="160" y="740" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#94a3b8">
+    Key Points:
+  </text>
+  <g font-family="Arial, sans-serif" font-size="24" fill="#e2e8f0">
+    <text x="180" y="790">• Converts light energy to chemical energy</text>
+    <text x="180" y="835">• Produces glucose (food) and oxygen</text>
+    <text x="180" y="880">• Essential for life on Earth</text>
+    <text x="900" y="790">• Requires sunlight, water, and carbon dioxide</text>
+    <text x="900" y="835">• Occurs in chloroplasts</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="100" y="1030" font-family="Arial, sans-serif" font-size="20" fill="#64748b">
+    AetherLearn • Photosynthesis Lecture
+  </text>
+  <text x="1820" y="1030" font-family="Arial, sans-serif" font-size="20" fill="#64748b" text-anchor="end">
+    Slide 2
+  </text>
+</svg>

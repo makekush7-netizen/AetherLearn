@@ -1,17 +1,84 @@
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   BookOpen, Wifi, Brain, Users, Play, Star, ArrowRight, 
   Sparkles, Globe, Shield, Zap, CheckCircle2, ChevronRight,
-  GraduationCap, Trophy, Clock, Download
+  GraduationCap, Trophy, Clock, Download, Pause, MessageCircle, Send, X
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import AetherLearnLogo from "@/components/AetherLearnLogo";
 import { useTranslation } from "react-i18next";
+import Classroom from "@/components/Classroom";
+
+// Demo lecture slides
+const demoSlides = [
+  "/slides/photosynthesis/slide1.svg",
+  "/slides/photosynthesis/slide2.svg",
+  "/slides/photosynthesis/slide3.svg",
+];
 
 const LandingPage = () => {
   const { t } = useTranslation();
+  
+  // Demo lecture state
+  const [isDemoPlaying, setIsDemoPlaying] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [demoLoaded, setDemoLoaded] = useState(false);
+  
+  // Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState<{role: string; content: string}[]>([
+    { role: "assistant", content: "👋 Hi! I'm your AI tutor. Ask me anything about the lesson or learning with AetherLearn!" }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Stable callback for when demo loads
+  const handleDemoLoaded = useCallback(() => {
+    setDemoLoaded(true);
+  }, []);
+
+  // Auto-scroll chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
+  // Auto-advance slides when playing
+  useEffect(() => {
+    if (!isDemoPlaying) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % demoSlides.length);
+    }, 5000); // Change slide every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [isDemoPlaying]);
+
+  // Handle chat send
+  const handleSendMessage = async () => {
+    if (!chatMessage.trim()) return;
+    
+    const userMsg = chatMessage.trim();
+    setChatMessages(prev => [...prev, { role: "user", content: userMsg }]);
+    setChatMessage("");
+    setIsTyping(true);
+    
+    // Simulate AI response (in production, this would call the actual AI API)
+    setTimeout(() => {
+      const responses = [
+        "Great question! Photosynthesis is the process where plants convert sunlight into food. The chloroplasts in leaves contain chlorophyll which absorbs light energy.",
+        "That's an interesting point! The chemical equation is: 6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂. This means plants take in carbon dioxide and water, and produce glucose and oxygen.",
+        "I'd be happy to explain more! AetherLearn uses 3D virtual classrooms to make learning more immersive. You can learn completely offline once content is downloaded.",
+        "Absolutely! Our gamified learning system includes quizzes, achievements, and leaderboards to keep you motivated. Would you like to try a demo?",
+      ];
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      setChatMessages(prev => [...prev, { role: "assistant", content: randomResponse }]);
+      setIsTyping(false);
+    }, 1500);
+  };
 
   const getLogoLink = () => {
     const userType = localStorage.getItem("userType");
@@ -165,24 +232,72 @@ const LandingPage = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/30 via-purple-500/30 to-accent/30 rounded-3xl blur-2xl opacity-60 animate-pulse-glow" />
               
               {/* Card */}
-              <div className="relative glass-card rounded-3xl p-8 shadow-elevated">
-                {/* 3D Classroom Preview */}
-                <div className="aspect-video bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden relative group">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-primary/20 flex items-center justify-center animate-float">
-                        <GraduationCap className="w-10 h-10 text-primary" />
-                      </div>
-                      <p className="text-white/80 text-sm">3D Virtual Classroom</p>
-                    </div>
-                  </div>
+              <div className="relative glass-card rounded-3xl p-4 sm:p-6 shadow-elevated">
+                {/* 3D Classroom - Live Demo */}
+                <div className="aspect-video bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden relative">
+                  {/* Actual 3D Classroom */}
+                  <Classroom 
+                    isPlaying={isDemoPlaying}
+                    onLoaded={handleDemoLoaded}
+                    currentSlide={currentSlide}
+                    slides={demoSlides}
+                  />
                   
-                  {/* Play Button Overlay */}
-                  <Link to="/lecture/1" className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                      <Play className="w-8 h-8 text-primary ml-1" />
+                  {/* Loading overlay */}
+                  {!demoLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80">
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary/20 flex items-center justify-center animate-pulse">
+                          <GraduationCap className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-white/80 text-sm">Loading 3D Classroom...</p>
+                      </div>
                     </div>
-                  </Link>
+                  )}
+                  
+                  {/* Play/Pause Controls */}
+                  {demoLoaded && (
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                      <Button
+                        size="sm"
+                        onClick={() => setIsDemoPlaying(!isDemoPlaying)}
+                        className="bg-white/90 hover:bg-white text-primary shadow-lg"
+                      >
+                        {isDemoPlaying ? (
+                          <>
+                            <Pause className="w-4 h-4 mr-1" />
+                            Pause
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-1" />
+                            Play Demo
+                          </>
+                        )}
+                      </Button>
+                      
+                      {/* Slide indicator */}
+                      <div className="flex gap-1.5">
+                        {demoSlides.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentSlide(idx)}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              idx === currentSlide 
+                                ? "bg-white w-6" 
+                                : "bg-white/50 hover:bg-white/70"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* "Live Demo" badge */}
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-red-500/90 text-white text-xs font-medium flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    Live Demo
+                  </div>
                 </div>
 
                 {/* Mini Stats */}
@@ -204,17 +319,20 @@ const LandingPage = () => {
             </div>
 
             {/* Floating Elements */}
-            <div className="absolute -top-6 -right-6 glass-card rounded-2xl p-4 shadow-card animate-float delay-100">
+            <button 
+              onClick={() => setIsChatOpen(true)}
+              className="absolute -top-6 -right-6 glass-card rounded-2xl p-4 shadow-card animate-float delay-100 hover:scale-105 transition-transform cursor-pointer"
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
                   <Brain className="w-5 h-5 text-accent" />
                 </div>
-                <div>
+                <div className="text-left">
                   <p className="text-sm font-semibold">AI Tutor</p>
-                  <p className="text-xs text-muted-foreground">Ask anything!</p>
+                  <p className="text-xs text-muted-foreground">Click to chat!</p>
                 </div>
               </div>
-            </div>
+            </button>
 
             <div className="absolute -bottom-4 -left-6 glass-card rounded-2xl p-4 shadow-card animate-float delay-300">
               <div className="flex items-center gap-3">
@@ -447,6 +565,102 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Floating Chat Widget */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Chat Window */}
+        {isChatOpen && (
+          <div className="absolute bottom-16 right-0 w-80 sm:w-96 glass-card rounded-2xl shadow-elevated overflow-hidden animate-fade-up">
+            {/* Chat Header */}
+            <div className="gradient-primary p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold">AI Tutor</p>
+                  <p className="text-white/70 text-xs">Ask me anything!</p>
+                </div>
+              </div>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="text-white hover:bg-white/20"
+                onClick={() => setIsChatOpen(false)}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            
+            {/* Chat Messages */}
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-background/95">
+              {chatMessages.map((msg, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                    msg.role === 'user' 
+                      ? 'bg-primary text-white rounded-br-md' 
+                      : 'bg-muted text-foreground rounded-bl-md'
+                  }`}>
+                    <p className="text-sm">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{animationDelay: '0ms'}} />
+                      <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{animationDelay: '150ms'}} />
+                      <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{animationDelay: '300ms'}} />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+            
+            {/* Chat Input */}
+            <div className="p-4 border-t border-border bg-background">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Type a message..."
+                  className="flex-1 px-4 py-2 rounded-full bg-muted border-0 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <Button 
+                  size="icon" 
+                  className="rounded-full gradient-primary"
+                  onClick={handleSendMessage}
+                  disabled={!chatMessage.trim()}
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Chat Toggle Button */}
+        <Button
+          size="lg"
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`w-14 h-14 rounded-full shadow-glow hover:shadow-lg transition-all ${
+            isChatOpen ? 'bg-muted text-foreground' : 'gradient-primary text-white'
+          }`}
+        >
+          {isChatOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <MessageCircle className="w-6 h-6" />
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
