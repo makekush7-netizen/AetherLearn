@@ -1,0 +1,80 @@
+{
+  "id": "photosynthesis_detailed",
+  "title": "Photosynthesis - A Comprehensive Guide",
+  "subject": "Biology",
+  "grade": "8-10",
+  "created_at": "2025-11-28T00:26:37.327699",
+  "total_slides": 10,
+  "segments": [
+    {
+      "index": 1,
+      "title": "Introduction to Photosynthesis",
+      "slide_path": "/slides/photosynthesis/slide1.svg",
+      "audio_path": "/audio/photosynthesis/slide1.wav",
+      "speech_text": "Welcome to today's comprehensive lesson on Photosynthesis! This is one of the most important biological processes on our planet. [GESTURE] Think about it - every breath you take, every bite of food you eat, can be traced back to photosynthesis. [POINT] As you can see on the board, we'll explore how plants convert sunlight into the chemical energy that sustains almost all life on Earth."
+    },
+    {
+      "index": 2,
+      "title": "What is Photosynthesis?",
+      "slide_path": "/slides/photosynthesis/slide2.svg",
+      "audio_path": "/audio/photosynthesis/slide2.wav",
+      "speech_text": "Let's break down the word itself. [GESTURE] Photo comes from the Greek word for light, and synthesis means putting together. So photosynthesis literally means putting together with light! [POINT] Looking at the board, plants take three simple ingredients - sunlight, water from the soil, and carbon dioxide from the air - and combine them to create glucose, which is their food. And here's the beautiful part - oxygen is released as a byproduct, which is exactly what we need to breathe!"
+    },
+    {
+      "index": 3,
+      "title": "The Chemical Equation",
+      "slide_path": "/slides/photosynthesis/slide3.svg",
+      "audio_path": "/audio/photosynthesis/slide3.wav",
+      "speech_text": "Now let's look at the chemistry. [POINT] On the board you can see the chemical equation for photosynthesis. Six molecules of carbon dioxide combine with six molecules of water. When light energy is added, this produces one molecule of glucose - that's C6H12O6 - plus six molecules of oxygen. [GESTURE] This equation represents millions of years of evolution perfecting the most efficient energy conversion system in nature!"
+    },
+    {
+      "index": 4,
+      "title": "Where Photosynthesis Happens",
+      "slide_path": "/slides/photosynthesis/slide4.svg",
+      "audio_path": "/audio/photosynthesis/slide4.wav",
+      "speech_text": "So where does all this happen? [POINT] If you look at the board, photosynthesis occurs inside special structures called chloroplasts. These are like tiny solar panels inside plant cells. [GESTURE] Inside each chloroplast is a green pigment called chlorophyll - and that's exactly why plants are green! Chlorophyll absorbs sunlight, particularly red and blue light, and reflects green light back to our eyes. A single leaf can contain millions of these microscopic chloroplasts working together!"
+    },
+    {
+      "index": 5,
+      "title": "The Two Stages of Photosynthesis",
+      "slide_path": "/slides/photosynthesis/slide5.svg",
+      "audio_path": "/audio/photosynthesis/slide5.wav",
+      "speech_text": "[GESTURE] Photosynthesis isn't just one step - it's actually two interconnected stages! [POINT] As shown on the board, we have the light-dependent reactions and the light-independent reactions, also called the Calvin Cycle. The first stage captures light energy and stores it temporarily. The second stage uses that stored energy to actually build glucose molecules. These two stages work like a relay race - passing energy from one to the other!"
+    },
+    {
+      "index": 6,
+      "title": "Light-Dependent Reactions",
+      "slide_path": "/slides/photosynthesis/slide6.svg",
+      "audio_path": "/audio/photosynthesis/slide6.wav",
+      "speech_text": "Let's dive deeper into stage one. [POINT] Looking at the board, the light-dependent reactions happen in structures called thylakoid membranes inside the chloroplast. [GESTURE] When light hits the chlorophyll, it energizes electrons and triggers a chain reaction. Water molecules are split apart - the hydrogen is kept, and the oxygen is released into the air. This process creates ATP and NADPH, which are like rechargeable batteries that carry energy to the next stage!"
+    },
+    {
+      "index": 7,
+      "title": "The Calvin Cycle",
+      "slide_path": "/slides/photosynthesis/slide7.svg",
+      "audio_path": "/audio/photosynthesis/slide7.wav",
+      "speech_text": "Now for stage two - the Calvin Cycle! [POINT] On the board you can see this happens in the stroma, which is the fluid inside the chloroplast. [GESTURE] This is where the magic of actually making sugar happens. The ATP and NADPH from the first stage provide the energy needed to take carbon dioxide from the air and literally build it into glucose molecules, one carbon at a time. This cycle was discovered by Melvin Calvin, who won the Nobel Prize for this work!"
+    },
+    {
+      "index": 8,
+      "title": "Factors Affecting Photosynthesis",
+      "slide_path": "/slides/photosynthesis/slide8.svg",
+      "audio_path": "/audio/photosynthesis/slide8.wav",
+      "speech_text": "[GESTURE] Not all photosynthesis happens at the same rate. Several factors can speed it up or slow it down. [POINT] As you can see on the board, light intensity is crucial - more light generally means faster photosynthesis, up to a point. Carbon dioxide levels matter too - that's why greenhouses sometimes add extra CO2. Temperature needs to be just right - too cold and the enzymes work slowly, too hot and they stop working entirely. And of course, water is essential as a raw material!"
+    },
+    {
+      "index": 9,
+      "title": "Why Photosynthesis Matters",
+      "slide_path": "/slides/photosynthesis/slide9.svg",
+      "audio_path": "/audio/photosynthesis/slide9.wav",
+      "speech_text": "[GESTURE] Let's step back and appreciate why photosynthesis is so incredibly important! [POINT] Looking at the board - first, every breath of oxygen you take was produced by photosynthesis, either by plants, algae, or cyanobacteria. Second, almost all food chains start with photosynthetic organisms. Third, plants absorb carbon dioxide, helping regulate our climate. And here's something amazing - even the coal, oil, and natural gas we use today came from ancient plants that captured sunlight millions of years ago through photosynthesis!"
+    },
+    {
+      "index": 10,
+      "title": "Summary and Key Points",
+      "slide_path": "/slides/photosynthesis/slide10.svg",
+      "audio_path": "/audio/photosynthesis/slide10.wav",
+      "speech_text": "[GESTURE] Let's wrap up what we've learned today! [POINT] Looking at our summary on the board - photosynthesis is the remarkable process that converts light energy into chemical energy stored in glucose. The equation shows us the inputs and outputs. It all happens in chloroplasts, powered by the green pigment chlorophyll. The process has two stages that work together. And most importantly, photosynthesis is the foundation of life on Earth - without it, we simply wouldn't exist! [GESTURE] Great job today, and I'll see you in the next lesson!"
+    }
+  ]
+}
