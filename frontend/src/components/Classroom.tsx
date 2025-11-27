@@ -1,14 +1,59 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 interface ClassroomProps {
   isPlaying?: boolean;
   onLoaded?: () => void;
+  currentSlide?: number;
+  slides?: string[];
 }
 
-export function Classroom({ isPlaying = false, onLoaded }: ClassroomProps) {
+// Helper function to load SVG as texture
+const loadSVGTexture = (url: string): Promise<THREE.Texture> => {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then(response => response.text())
+      .then(svgText => {
+        // Create a blob URL from SVG text
+        const blob = new Blob([svgText], { type: 'image/svg+xml' });
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Create an image from the blob
+        const img = new Image();
+        img.onload = () => {
+          // Create canvas and draw the SVG
+          const canvas = document.createElement('canvas');
+          canvas.width = 1920;  // Match SVG viewBox
+          canvas.height = 1080;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Create texture from canvas
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.needsUpdate = true;
+            
+            URL.revokeObjectURL(blobUrl);
+            resolve(texture);
+          } else {
+            reject(new Error('Could not get canvas context'));
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(blobUrl);
+          reject(new Error('Failed to load image'));
+        };
+        img.src = blobUrl;
+      })
+      .catch(reject);
+  });
+};
+
+export function Classroom({ isPlaying = false, onLoaded, currentSlide = 0, slides = [] }: ClassroomProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const whiteboardRef = useRef<THREE.Mesh | null>(null);
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -86,20 +131,59 @@ export function Classroom({ isPlaying = false, onLoaded }: ClassroomProps) {
         const classroom = gltf.scene;
         classroom.scale.set(1, 1, 1);
         scene.add(classroom);
+        
+        // Create whiteboard/presentation screen
+        const screenGeometry = new THREE.PlaneGeometry(1.8, 1.1);
+        const screenMaterial = new THREE.MeshBasicMaterial({ 
+          color: 0xffffff,
+          side: THREE.DoubleSide
+        });
+        const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+        
+        // Position the screen on the wall behind/beside the lecturer
+        screen.position.set(-3.8, 1.6, -1.4);
+        screen.rotation.y = Math.PI / 2;
+        scene.add(screen);
+        whiteboardRef.current = screen;
+        
+        console.log('Whiteboard added to scene');
+        
+        // Load initial slide if available
+        if (slides.length > 0) {
+          const slideUrl = slides[0];
+          if (slideUrl.endsWith('.svg')) {
+            // Load SVG using our helper
+            loadSVGTexture(slideUrl).then(texture => {
+              (screen.material as THREE.MeshBasicMaterial).map = texture;
+              (screen.material as THREE.MeshBasicMaterial).needsUpdate = true;
+            }).catch(err => console.error('Error loading slide:', err));
+          } else {
+            // Load regular image
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load(slideUrl, (texture) => {
+              texture.colorSpace = THREE.SRGBColorSpace;
+              (screen.material as THREE.MeshBasicMaterial).map = texture;
+              (screen.material as THREE.MeshBasicMaterial).needsUpdate = true;
+            });
+          }
+        }
       },
       undefined,
       (error) => console.error('Error loading classroom:', error)
     );
 
-    // Load lecturer - EXACT position/rotation from original
+    // Load lecturer - positioned in front of whiteboard
     loader.load(
       '/models/lecturer.glb',
       (gltf) => {
         const lecturer = gltf.scene;
         lecturer.scale.set(1.1, 1.1, 1.1);
+        // Original working position
         lecturer.position.set(-2.2, 0, -1.4);
-        lecturer.rotation.y = Math.PI / 3;
+        lecturer.rotation.y = Math.PI / 3; // Facing toward students
         scene.add(lecturer);
+
+        console.log('Lecturer loaded and added to scene');
 
         // Setup animations
         if (gltf.animations.length > 0) {
@@ -160,6 +244,38 @@ export function Classroom({ isPlaying = false, onLoaded }: ClassroomProps) {
       sceneRef.current = null;
     };
   }, [onLoaded]);
+
+  // Handle slide changes
+  useEffect(() => {
+    if (!whiteboardRef.current || slides.length === 0) return;
+    if (currentSlide < 0 || currentSlide >= slides.length) return;
+
+    const slideUrl = slides[currentSlide];
+    const material = whiteboardRef.current.material as THREE.MeshBasicMaterial;
+
+    const updateTexture = (texture: THREE.Texture) => {
+      // Dispose old texture
+      if (material.map) {
+        material.map.dispose();
+      }
+      material.map = texture;
+      material.needsUpdate = true;
+    };
+
+    if (slideUrl.endsWith('.svg')) {
+      // Load SVG using our helper
+      loadSVGTexture(slideUrl).then(updateTexture).catch(err => 
+        console.error('Error loading slide:', err)
+      );
+    } else {
+      // Load regular image
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.load(slideUrl, (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        updateTexture(texture);
+      });
+    }
+  }, [currentSlide, slides]);
 
   // Handle play state changes
   useEffect(() => {

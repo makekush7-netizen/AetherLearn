@@ -25,6 +25,23 @@
           "text": "This process occurs mainly in the leaves, specifically in chloroplasts."
         }
       ],
+      "slides": [
+        {
+          "image": "/slides/photosynthesis/slide1.svg",
+          "time_start": 0,
+          "title": "Introduction"
+        },
+        {
+          "image": "/slides/photosynthesis/slide2.svg",
+          "time_start": 10,
+          "title": "What is Photosynthesis?"
+        },
+        {
+          "image": "/slides/photosynthesis/slide3.svg",
+          "time_start": 25,
+          "title": "Where it Happens"
+        }
+      ],
       "notes": "Key points:\n1. Photosynthesis converts light energy to chemical energy\n2. Occurs in chloroplasts of plant cells\n3. Produces glucose and oxygen\n4. Formula: 6CO2 + 6H2O + light → C6H12O6 + 6O2",
       "images": [],
       "lecturer_animation": "SpeakingIdle",
