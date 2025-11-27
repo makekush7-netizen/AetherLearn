@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import quizzesData from "@/data/quizzes.json";
+import { quizAPI } from "@/services/api";
 
 interface Question {
   id: string;
@@ -67,17 +68,24 @@ const QuizPage = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
-      // Save score to localStorage
+      // Save score to localStorage (offline backup)
       const quizScores = JSON.parse(localStorage.getItem("quizScores") || "{}");
       const percentage = (score / questions.length) * 100;
       quizScores[quiz.id] = percentage;
       localStorage.setItem("quizScores", JSON.stringify(quizScores));
+      
+      // Submit to backend
+      try {
+        await quizAPI.submitScore(quiz.id, score, questions.length);
+      } catch (error) {
+        console.log("Offline mode - score saved locally");
+      }
       
       setQuizComplete(true);
     }

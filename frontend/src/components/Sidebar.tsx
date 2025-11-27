@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import AetherLearnLogo from "./AetherLearnLogo";
 import { useTranslation } from "react-i18next";
+import { authAPI } from "@/services/api";
 
 const languages = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -73,9 +74,7 @@ const Sidebar = ({ children }: SidebarProps) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userType");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userEmail");
+    authAPI.logout();
     navigate("/");
   };
 

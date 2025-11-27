@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { authAPI } from "@/services/api";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const ProfilePage = () => {
   const school = localStorage.getItem("school") || "N/A";
 
   const handleLogout = () => {
-    localStorage.clear();
+    authAPI.logout();
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",

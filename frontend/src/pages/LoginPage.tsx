@@ -5,41 +5,72 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authAPI } from "@/services/api";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [studentData, setStudentData] = useState({ classId: "", rollNumber: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [studentData, setStudentData] = useState({ classId: "", rollNumber: "", password: "" });
   const [teacherData, setTeacherData] = useState({ email: "", password: "" });
 
-  const handleStudentLogin = (e: React.FormEvent) => {
+  const handleStudentLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!studentData.classId || !studentData.rollNumber) {
+    if (!studentData.classId || !studentData.rollNumber || !studentData.password) {
       toast({
         title: "Missing Information",
-        description: "Please enter both Class ID and Roll Number",
+        description: "Please enter Class ID, Roll Number, and Password",
         variant: "destructive",
       });
       return;
     }
 
-    // Store user data in localStorage
-    localStorage.setItem("userType", "student");
-    localStorage.setItem("userId", studentData.rollNumber);
-    localStorage.setItem("classId", studentData.classId);
+    setIsLoading(true);
+    
+    try {
+      const response = await authAPI.login({
+        userType: 'student',
+        rollNumber: studentData.rollNumber,
+        classId: studentData.classId,
+        password: studentData.password,
+      });
 
-    toast({
-      title: "Login Successful",
-      description: "Welcome back, student!",
-    });
+      toast({
+        title: "Login Successful",
+        description: `Welcome back, ${response.user.name}!`,
+      });
 
-    navigate("/dashboard");
+      navigate("/dashboard");
+    } catch (error: any) {
+      // If backend is unavailable, fall back to offline mode
+      if (error.message.includes('fetch')) {
+        localStorage.setItem("userType", "student");
+        localStorage.setItem("userId", studentData.rollNumber);
+        localStorage.setItem("classId", studentData.classId);
+        localStorage.setItem("userName", "Student");
+
+        toast({
+          title: "Offline Mode",
+          description: "Connected locally. Data will sync when online.",
+        });
+
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: error.message || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleTeacherLogin = (e: React.FormEvent) => {
+  const handleTeacherLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!teacherData.email || !teacherData.password) {
@@ -51,16 +82,43 @@ const LoginPage = () => {
       return;
     }
 
-    // Store user data in localStorage
-    localStorage.setItem("userType", "teacher");
-    localStorage.setItem("userEmail", teacherData.email);
+    setIsLoading(true);
 
-    toast({
-      title: "Login Successful",
-      description: "Welcome back, teacher!",
-    });
+    try {
+      const response = await authAPI.login({
+        userType: 'teacher',
+        email: teacherData.email,
+        password: teacherData.password,
+      });
 
-    navigate("/dashboard");
+      toast({
+        title: "Login Successful",
+        description: `Welcome back, ${response.user.name}!`,
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error.message.includes('fetch')) {
+        localStorage.setItem("userType", "teacher");
+        localStorage.setItem("userEmail", teacherData.email);
+        localStorage.setItem("userName", "Teacher");
+
+        toast({
+          title: "Offline Mode",
+          description: "Connected locally. Data will sync when online.",
+        });
+
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: error.message || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -86,6 +144,7 @@ const LoginPage = () => {
                   placeholder="Enter your class ID"
                   value={studentData.classId}
                   onChange={(e) => setStudentData({ ...studentData, classId: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -96,11 +155,31 @@ const LoginPage = () => {
                   placeholder="Enter your roll number"
                   value={studentData.rollNumber}
                   onChange={(e) => setStudentData({ ...studentData, rollNumber: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Login as Student
+              <div className="space-y-2">
+                <Label htmlFor="studentPassword">Password</Label>
+                <Input
+                  id="studentPassword"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={studentData.password}
+                  onChange={(e) => setStudentData({ ...studentData, password: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login as Student"
+                )}
               </Button>
             </form>
           </TabsContent>
@@ -115,6 +194,7 @@ const LoginPage = () => {
                   placeholder="teacher@example.com"
                   value={teacherData.email}
                   onChange={(e) => setTeacherData({ ...teacherData, email: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -126,11 +206,19 @@ const LoginPage = () => {
                   placeholder="Enter your password"
                   value={teacherData.password}
                   onChange={(e) => setTeacherData({ ...teacherData, password: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Login as Teacher
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Login as Teacher"
+                )}
               </Button>
             </form>
           </TabsContent>

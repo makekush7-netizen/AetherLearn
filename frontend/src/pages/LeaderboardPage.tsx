@@ -1,29 +1,42 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Trophy, Medal } from "lucide-react";
+import { ArrowLeft, Trophy, Medal, Loader2 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-interface LeaderboardEntry {
-  rank: number;
-  name: string;
-  score: number;
-  streak: number;
-}
+import { leaderboardAPI, LeaderboardEntry } from "@/services/api";
 
 const LeaderboardPage = () => {
   const navigate = useNavigate();
-  const currentUserId = localStorage.getItem("userId") || "101";
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const leaderboard: LeaderboardEntry[] = [
-    { rank: 1, name: "Alice Johnson", score: 950, streak: 12 },
-    { rank: 2, name: "Bob Smith", score: 920, streak: 10 },
-    { rank: 3, name: "Carol Davis", score: 890, streak: 8 },
-    { rank: 4, name: "David Wilson", score: 850, streak: 7 },
-    { rank: 5, name: "You", score: 820, streak: 7 },
-    { rank: 6, name: "Eve Brown", score: 790, streak: 5 },
-    { rank: 7, name: "Frank Miller", score: 750, streak: 4 },
+  // Fallback data for offline mode
+  const fallbackLeaderboard: LeaderboardEntry[] = [
+    { rank: 1, userId: 1, name: "Alice Johnson", score: 950, streak: 12, isCurrentUser: false },
+    { rank: 2, userId: 2, name: "Bob Smith", score: 920, streak: 10, isCurrentUser: false },
+    { rank: 3, userId: 3, name: "Carol Davis", score: 890, streak: 8, isCurrentUser: false },
+    { rank: 4, userId: 4, name: "David Wilson", score: 850, streak: 7, isCurrentUser: false },
+    { rank: 5, userId: 5, name: "You", score: 820, streak: 7, isCurrentUser: true },
+    { rank: 6, userId: 6, name: "Eve Brown", score: 790, streak: 5, isCurrentUser: false },
+    { rank: 7, userId: 7, name: "Frank Miller", score: 750, streak: 4, isCurrentUser: false },
   ];
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await leaderboardAPI.getLeaderboard();
+        setLeaderboard(response.leaderboard);
+      } catch (error) {
+        // Use fallback data if offline
+        setLeaderboard(fallbackLeaderboard);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, []);
 
   const getMedalIcon = (rank: number) => {
     if (rank === 1) return <span className="text-2xl">🥇</span>;
@@ -73,13 +86,19 @@ const LeaderboardPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {leaderboard.map((entry) => {
-                    const isCurrentUser = entry.name === "You";
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-8 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
+                        <p className="text-muted-foreground mt-2">Loading leaderboard...</p>
+                      </td>
+                    </tr>
+                  ) : leaderboard.map((entry) => {
                     return (
                       <tr
                         key={entry.rank}
                         className={`transition-colors ${
-                          isCurrentUser
+                          entry.isCurrentUser
                             ? "bg-primary/10 font-medium"
                             : "hover:bg-muted/50"
                         }`}
@@ -96,7 +115,7 @@ const LeaderboardPage = () => {
                         <td className="px-6 py-4">
                           <span className="text-foreground font-medium">
                             {entry.name}
-                            {isCurrentUser && (
+                            {entry.isCurrentUser && (
                               <span className="ml-2 text-xs text-primary">(You)</span>
                             )}
                           </span>

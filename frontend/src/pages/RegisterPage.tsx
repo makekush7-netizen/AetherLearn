@@ -5,19 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authAPI } from "@/services/api";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [studentData, setStudentData] = useState({ name: "", rollNumber: "", classId: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [studentData, setStudentData] = useState({ name: "", rollNumber: "", classId: "", password: "" });
   const [teacherData, setTeacherData] = useState({ name: "", email: "", school: "", password: "" });
 
-  const handleStudentRegister = (e: React.FormEvent) => {
+  const handleStudentRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!studentData.name || !studentData.rollNumber || !studentData.classId) {
+    if (!studentData.name || !studentData.rollNumber || !studentData.classId || !studentData.password) {
       toast({
         title: "Missing Information",
         description: "Please fill in all fields",
@@ -26,21 +28,50 @@ const RegisterPage = () => {
       return;
     }
 
-    // Store user data
-    localStorage.setItem("userType", "student");
-    localStorage.setItem("userName", studentData.name);
-    localStorage.setItem("userId", studentData.rollNumber);
-    localStorage.setItem("classId", studentData.classId);
+    setIsLoading(true);
 
-    toast({
-      title: "Registration Successful",
-      description: "Welcome to AetherLearn!",
-    });
+    try {
+      const response = await authAPI.register({
+        userType: 'student',
+        name: studentData.name,
+        rollNumber: studentData.rollNumber,
+        classId: studentData.classId,
+        password: studentData.password,
+      });
 
-    navigate("/dashboard");
+      toast({
+        title: "Registration Successful",
+        description: `Welcome to AetherLearn, ${response.user.name}!`,
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error.message.includes('fetch')) {
+        // Offline fallback
+        localStorage.setItem("userType", "student");
+        localStorage.setItem("userName", studentData.name);
+        localStorage.setItem("userId", studentData.rollNumber);
+        localStorage.setItem("classId", studentData.classId);
+
+        toast({
+          title: "Offline Mode",
+          description: "Registered locally. Will sync when online.",
+        });
+
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: error.message || "Could not register",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleTeacherRegister = (e: React.FormEvent) => {
+  const handleTeacherRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!teacherData.name || !teacherData.email || !teacherData.school || !teacherData.password) {
@@ -52,18 +83,46 @@ const RegisterPage = () => {
       return;
     }
 
-    // Store user data
-    localStorage.setItem("userType", "teacher");
-    localStorage.setItem("userName", teacherData.name);
-    localStorage.setItem("userEmail", teacherData.email);
-    localStorage.setItem("school", teacherData.school);
+    setIsLoading(true);
 
-    toast({
-      title: "Registration Successful",
-      description: "Welcome to AetherLearn!",
-    });
+    try {
+      const response = await authAPI.register({
+        userType: 'teacher',
+        name: teacherData.name,
+        email: teacherData.email,
+        school: teacherData.school,
+        password: teacherData.password,
+      });
 
-    navigate("/dashboard");
+      toast({
+        title: "Registration Successful",
+        description: `Welcome to AetherLearn, ${response.user.name}!`,
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error.message.includes('fetch')) {
+        localStorage.setItem("userType", "teacher");
+        localStorage.setItem("userName", teacherData.name);
+        localStorage.setItem("userEmail", teacherData.email);
+        localStorage.setItem("school", teacherData.school);
+
+        toast({
+          title: "Offline Mode",
+          description: "Registered locally. Will sync when online.",
+        });
+
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: error.message || "Could not register",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -91,6 +150,7 @@ const RegisterPage = () => {
                   placeholder="Enter your name"
                   value={studentData.name}
                   onChange={(e) => setStudentData({ ...studentData, name: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -101,6 +161,7 @@ const RegisterPage = () => {
                   placeholder="Enter your roll number"
                   value={studentData.rollNumber}
                   onChange={(e) => setStudentData({ ...studentData, rollNumber: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -111,11 +172,31 @@ const RegisterPage = () => {
                   placeholder="Enter your class ID"
                   value={studentData.classId}
                   onChange={(e) => setStudentData({ ...studentData, classId: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Register as Student
+              <div className="space-y-2">
+                <Label htmlFor="studentPassword">Password</Label>
+                <Input
+                  id="studentPassword"
+                  type="password"
+                  placeholder="Create a password"
+                  value={studentData.password}
+                  onChange={(e) => setStudentData({ ...studentData, password: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  "Register as Student"
+                )}
               </Button>
             </form>
           </TabsContent>
@@ -129,6 +210,7 @@ const RegisterPage = () => {
                   placeholder="Enter your name"
                   value={teacherData.name}
                   onChange={(e) => setTeacherData({ ...teacherData, name: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -140,6 +222,7 @@ const RegisterPage = () => {
                   placeholder="teacher@example.com"
                   value={teacherData.email}
                   onChange={(e) => setTeacherData({ ...teacherData, email: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -150,6 +233,7 @@ const RegisterPage = () => {
                   placeholder="Enter school name"
                   value={teacherData.school}
                   onChange={(e) => setTeacherData({ ...teacherData, school: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -161,11 +245,19 @@ const RegisterPage = () => {
                   placeholder="Create a password"
                   value={teacherData.password}
                   onChange={(e) => setTeacherData({ ...teacherData, password: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Register as Teacher
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  "Register as Teacher"
+                )}
               </Button>
             </form>
           </TabsContent>

@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import testsData from "@/data/tests.json";
+import { testAPI } from "@/services/api";
 
 interface Question {
   id: string;
@@ -110,12 +111,12 @@ const TestPage = () => {
     return Math.round(totalScore);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const score = calculateAIScore();
     setAiScore(score);
     setSubmitted(true);
     
-    // Save result
+    // Save result locally (offline backup)
     const results = JSON.parse(localStorage.getItem('testResults') || '[]');
     results.push({
       test_id: id,
@@ -125,6 +126,13 @@ const TestPage = () => {
     });
     localStorage.setItem('testResults', JSON.stringify(results));
     localStorage.removeItem(`test_${id}_draft`);
+    
+    // Submit to backend
+    try {
+      await testAPI.submitTest(id!, answers, score, test.total_marks);
+    } catch (error) {
+      console.log("Offline mode - test saved locally");
+    }
     
     toast({
       title: "Test Submitted",
