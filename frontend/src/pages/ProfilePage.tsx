@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, User, LogOut, Mail, School, Award } from "lucide-react";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -26,8 +26,8 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <Sidebar>
+      <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
@@ -128,6 +128,7 @@ const ProfilePage = () => {
         </div>
       </main>
     </div>
+    </Sidebar>
   );
 };
 

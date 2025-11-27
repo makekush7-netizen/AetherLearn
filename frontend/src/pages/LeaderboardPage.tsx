@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Trophy, Medal } from "lucide-react";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -33,8 +33,8 @@ const LeaderboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <Sidebar>
+      <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
@@ -135,6 +135,7 @@ const LeaderboardPage = () => {
         </div>
       </main>
     </div>
+    </Sidebar>
   );
 };
 

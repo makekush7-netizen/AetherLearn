@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, Save } from "lucide-react";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -139,8 +139,8 @@ const TestPage = () => {
     const passed = percentage >= 60;
     
     return (
+      <Sidebar>
       <div className="min-h-screen bg-background flex flex-col">
-        <Header />
         <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
           <Card className="w-full max-w-2xl p-8 text-center shadow-elevated">
             <h1 className="text-3xl font-bold text-foreground mb-4">Test Submitted!</h1>
@@ -167,12 +167,13 @@ const TestPage = () => {
           </Card>
         </main>
       </div>
+      </Sidebar>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+    <Sidebar>
+      <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
@@ -246,6 +247,7 @@ const TestPage = () => {
         </div>
       </main>
     </div>
+    </Sidebar>
   );
 };
 
