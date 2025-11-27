@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -9,51 +9,13 @@ interface ClassroomProps {
   slides?: string[];
 }
 
-// Helper function to load SVG as texture
-const loadSVGTexture = (url: string): Promise<THREE.Texture> => {
-  return new Promise((resolve, reject) => {
-    fetch(url)
-      .then(response => response.text())
-      .then(svgText => {
-        // Create a blob URL from SVG text
-        const blob = new Blob([svgText], { type: 'image/svg+xml' });
-        const blobUrl = URL.createObjectURL(blob);
-        
-        // Create an image from the blob
-        const img = new Image();
-        img.onload = () => {
-          // Create canvas and draw the SVG
-          const canvas = document.createElement('canvas');
-          canvas.width = 1920;  // Match SVG viewBox
-          canvas.height = 1080;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            // Create texture from canvas
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.needsUpdate = true;
-            
-            URL.revokeObjectURL(blobUrl);
-            resolve(texture);
-          } else {
-            reject(new Error('Could not get canvas context'));
-          }
-        };
-        img.onerror = () => {
-          URL.revokeObjectURL(blobUrl);
-          reject(new Error('Failed to load image'));
-        };
-        img.src = blobUrl;
-      })
-      .catch(reject);
-  });
-};
-
-export function Classroom({ isPlaying = false, onLoaded, currentSlide = 0, slides = [] }: ClassroomProps) {
+export function Classroom({ 
+  isPlaying = false, 
+  onLoaded, 
+  currentSlide = 0, 
+  slides = [] 
+}: ClassroomProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const whiteboardRef = useRef<THREE.Mesh | null>(null);
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -62,145 +24,130 @@ export function Classroom({ isPlaying = false, onLoaded, currentSlide = 0, slide
     animations: { [key: string]: THREE.AnimationAction };
     clock: THREE.Clock;
     animationId: number | null;
+    whiteboard: THREE.Mesh | null;
   } | null>(null);
 
+  // Main initialization effect
   useEffect(() => {
     if (!containerRef.current) return;
-
-    // Check if already initialized
-    if (sceneRef.current) return;
+    if (sceneRef.current) return; // Already initialized
 
     const container = containerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = container.clientWidth || 640;
+    const height = container.clientHeight || 360;
 
-    // Scene - Dark navy background (same as original)
+    console.log('Initializing 3D scene...', { width, height });
+
+    // Scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a2e);
 
-    // Camera - LOCKED position matching original script.js
+    // Camera - EXACT settings from original script.js
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
     camera.position.set(-0.8, 1.7, 0);
     camera.lookAt(-20, -0.6, -0.6);
 
-    // Renderer - Simpler settings for performance
+    // Renderer
     const renderer = new THREE.WebGLRenderer({ 
-      antialias: true,
-      alpha: false,
-      powerPreference: 'default'
+      antialias: true, 
+      alpha: false 
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Cap pixel ratio for performance
-    renderer.shadowMap.enabled = true;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // NO OrbitControls - camera is locked like original
-
-    // Lighting - Simple setup matching original
+    // Lighting - EXACT from original
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(15, 20, 15);
-    directionalLight.castShadow = true;
     scene.add(directionalLight);
 
     // Store refs
     const clock = new THREE.Clock();
-    const animations: { [key: string]: THREE.AnimationAction } = {};
-    let mixer: THREE.AnimationMixer | null = null;
-    let animationId: number | null = null;
-
     sceneRef.current = {
       scene,
       camera,
       renderer,
       mixer: null,
-      animations,
+      animations: {},
       clock,
-      animationId: null
+      animationId: null,
+      whiteboard: null
     };
 
-    // Load models
     const loader = new GLTFLoader();
 
     // Load classroom
     loader.load(
       '/models/basic_classroom.glb',
       (gltf) => {
+        console.log('✓ Classroom loaded');
         const classroom = gltf.scene;
         classroom.scale.set(1, 1, 1);
         scene.add(classroom);
+
+        // Add whiteboard for slides - 16:9 aspect ratio to match slides
+        const screenWidth = 2.4;
+        const screenHeight = screenWidth * (9/16); // 16:9 aspect ratio
+        const screenGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
         
-        // Create whiteboard/presentation screen
-        const screenGeometry = new THREE.PlaneGeometry(1.8, 1.1);
         const screenMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xffffff,
-          side: THREE.DoubleSide
+          color: 0xffffff, // White so texture shows at full brightness
+          side: THREE.DoubleSide,
+          toneMapped: false // Prevent tone mapping from darkening the texture
         });
-        const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+        const whiteboard = new THREE.Mesh(screenGeometry, screenMaterial);
+        // Camera is at (-0.8, 1.7, 0) looking towards negative X
+        // Place whiteboard VERY close to camera - just 1.5 units in front
+        whiteboard.position.set(-2.3, 1.7, 0);
+        whiteboard.rotation.y = Math.PI / 2; // Face the camera
+        scene.add(whiteboard);
         
-        // Position the screen on the wall behind/beside the lecturer
-        screen.position.set(-3.8, 1.6, -1.4);
-        screen.rotation.y = Math.PI / 2;
-        scene.add(screen);
-        whiteboardRef.current = screen;
-        
-        console.log('Whiteboard added to scene');
-        
-        // Load initial slide if available
-        if (slides.length > 0) {
-          const slideUrl = slides[0];
-          if (slideUrl.endsWith('.svg')) {
-            // Load SVG using our helper
-            loadSVGTexture(slideUrl).then(texture => {
-              (screen.material as THREE.MeshBasicMaterial).map = texture;
-              (screen.material as THREE.MeshBasicMaterial).needsUpdate = true;
-            }).catch(err => console.error('Error loading slide:', err));
-          } else {
-            // Load regular image
-            const textureLoader = new THREE.TextureLoader();
-            textureLoader.load(slideUrl, (texture) => {
-              texture.colorSpace = THREE.SRGBColorSpace;
-              (screen.material as THREE.MeshBasicMaterial).map = texture;
-              (screen.material as THREE.MeshBasicMaterial).needsUpdate = true;
-            });
-          }
+        if (sceneRef.current) {
+          sceneRef.current.whiteboard = whiteboard;
         }
+        console.log('✓ Whiteboard added at:', whiteboard.position);
       },
       undefined,
       (error) => console.error('Error loading classroom:', error)
     );
 
-    // Load lecturer - positioned in front of whiteboard
+    // Load lecturer - EXACT settings from original script.js
     loader.load(
       '/models/lecturer.glb',
       (gltf) => {
+        console.log('✓ Lecturer loaded');
         const lecturer = gltf.scene;
+        
+        // EXACT position from original script.js
         lecturer.scale.set(1.1, 1.1, 1.1);
-        // Original working position
         lecturer.position.set(-2.2, 0, -1.4);
-        lecturer.rotation.y = Math.PI / 3; // Facing toward students
+        lecturer.rotation.y = Math.PI / 3;
+        
         scene.add(lecturer);
 
-        console.log('Lecturer loaded and added to scene');
-
         // Setup animations
-        if (gltf.animations.length > 0) {
-          mixer = new THREE.AnimationMixer(lecturer);
-          sceneRef.current!.mixer = mixer;
+        if (gltf.animations.length > 0 && sceneRef.current) {
+          const mixer = new THREE.AnimationMixer(lecturer);
+          sceneRef.current.mixer = mixer;
 
           gltf.animations.forEach((clip) => {
-            const action = mixer!.clipAction(clip);
-            animations[clip.name] = action;
+            const action = mixer.clipAction(clip);
+            sceneRef.current!.animations[clip.name] = action;
           });
 
-          // Start with idle animation
-          if (animations['Idle']) {
-            animations['Idle'].play();
-          } else if (Object.keys(animations).length > 0) {
-            Object.values(animations)[0].play();
+          // Play idle animation by default
+          const idleAction = sceneRef.current.animations['Idle'];
+          if (idleAction) {
+            idleAction.play();
+          } else if (gltf.animations.length > 0) {
+            // Play first animation if no Idle
+            Object.values(sceneRef.current.animations)[0]?.play();
           }
+          
+          console.log('✓ Animations setup:', Object.keys(sceneRef.current.animations));
         }
 
         onLoaded?.();
@@ -211,28 +158,35 @@ export function Classroom({ isPlaying = false, onLoaded, currentSlide = 0, slide
 
     // Animation loop
     const animate = () => {
-      animationId = requestAnimationFrame(animate);
+      if (!sceneRef.current) return;
+      
+      sceneRef.current.animationId = requestAnimationFrame(animate);
       
       const delta = clock.getDelta();
-      if (mixer) mixer.update(delta);
+      if (sceneRef.current.mixer) {
+        sceneRef.current.mixer.update(delta);
+      }
+      
       renderer.render(scene, camera);
     };
     animate();
-    sceneRef.current.animationId = animationId;
 
     // Handle resize
     const handleResize = () => {
-      if (!container) return;
+      if (!container || !sceneRef.current) return;
       const newWidth = container.clientWidth;
       const newHeight = container.clientHeight;
-      camera.aspect = newWidth / newHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
+      if (newWidth > 0 && newHeight > 0) {
+        camera.aspect = newWidth / newHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(newWidth, newHeight);
+      }
     };
     window.addEventListener('resize', handleResize);
 
     // Cleanup
     return () => {
+      console.log('Cleaning up 3D scene');
       window.removeEventListener('resize', handleResize);
       if (sceneRef.current?.animationId) {
         cancelAnimationFrame(sceneRef.current.animationId);
@@ -247,50 +201,85 @@ export function Classroom({ isPlaying = false, onLoaded, currentSlide = 0, slide
 
   // Handle slide changes
   useEffect(() => {
-    if (!whiteboardRef.current || slides.length === 0) return;
+    if (slides.length === 0) return;
     if (currentSlide < 0 || currentSlide >= slides.length) return;
 
-    const slideUrl = slides[currentSlide];
-    const material = whiteboardRef.current.material as THREE.MeshBasicMaterial;
-
-    const updateTexture = (texture: THREE.Texture) => {
-      // Dispose old texture
-      if (material.map) {
-        material.map.dispose();
+    const loadSlide = async () => {
+      // Wait for whiteboard to be ready (it's created async after classroom loads)
+      let attempts = 0;
+      while (!sceneRef.current?.whiteboard && attempts < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
       }
-      material.map = texture;
-      material.needsUpdate = true;
+
+      if (!sceneRef.current?.whiteboard) {
+        console.log('Whiteboard not ready after waiting');
+        return;
+      }
+
+      const whiteboard = sceneRef.current.whiteboard;
+      const slideUrl = slides[currentSlide];
+      
+      console.log('Loading slide:', slideUrl);
+
+      try {
+        const res = await fetch(slideUrl);
+        const svgText = await res.text();
+        const encoded = btoa(unescape(encodeURIComponent(svgText)));
+        const dataUrl = `data:image/svg+xml;base64,${encoded}`;
+        
+        const img = new Image();
+        img.onload = () => {
+          // Higher resolution for better quality (matching SVG viewBox 1920x1080)
+          const canvas = document.createElement('canvas');
+          canvas.width = 1920;
+          canvas.height = 1080;
+          const ctx = canvas.getContext('2d');
+          
+          if (ctx) {
+            // Enable image smoothing for better quality
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            // Enable anisotropic filtering for better quality at angles
+            texture.anisotropy = 16;
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = true;
+            
+            const material = whiteboard.material as THREE.MeshBasicMaterial;
+            if (material.map) material.map.dispose();
+            material.map = texture;
+            material.needsUpdate = true;
+            
+            console.log('✓ Slide applied to whiteboard');
+          }
+        };
+        img.onerror = () => console.error('Failed to load slide image');
+        img.src = dataUrl;
+      } catch (err) {
+        console.error('Error loading slide:', err);
+      }
     };
 
-    if (slideUrl.endsWith('.svg')) {
-      // Load SVG using our helper
-      loadSVGTexture(slideUrl).then(updateTexture).catch(err => 
-        console.error('Error loading slide:', err)
-      );
-    } else {
-      // Load regular image
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.load(slideUrl, (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        updateTexture(texture);
-      });
-    }
+    loadSlide();
   }, [currentSlide, slides]);
 
-  // Handle play state changes
+  // Handle play state for animations
   useEffect(() => {
     if (!sceneRef.current?.mixer) return;
-    
+
     const { animations } = sceneRef.current;
-    
+
     if (isPlaying) {
-      // Switch to speaking animation
       if (animations['SpeakingIdle']) {
         Object.values(animations).forEach(a => a.fadeOut(0.3));
         animations['SpeakingIdle'].reset().fadeIn(0.3).play();
       }
     } else {
-      // Switch back to idle
       if (animations['Idle']) {
         Object.values(animations).forEach(a => a.fadeOut(0.3));
         animations['Idle'].reset().fadeIn(0.3).play();

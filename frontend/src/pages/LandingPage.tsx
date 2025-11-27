@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -35,6 +35,11 @@ const LandingPage = () => {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Stable callback for when demo loads
+  const handleDemoLoaded = useCallback(() => {
+    setDemoLoaded(true);
+  }, []);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -233,7 +238,7 @@ const LandingPage = () => {
                   {/* Actual 3D Classroom */}
                   <Classroom 
                     isPlaying={isDemoPlaying}
-                    onLoaded={() => setDemoLoaded(true)}
+                    onLoaded={handleDemoLoaded}
                     currentSlide={currentSlide}
                     slides={demoSlides}
                   />
